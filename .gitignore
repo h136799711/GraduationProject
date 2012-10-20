@@ -1,9 +1,12 @@
-/*.opt
-/*.dsw
-/*.dsp
-/*.ncb
-/*.plg
-/log.txt
+*.opt
+*.dsw
+*.dsp
+*.ncb
+*.plg
+*.obj
+*.exe
+log.txt
+
 # Compiled Object files
 *.slo
 *.lo
@@ -16,3 +19,9 @@
 *.lai
 *.la
 *.a
+*.obj
+*.sbr
+*.obj
+*.sbr
+/Release
+/Debug
