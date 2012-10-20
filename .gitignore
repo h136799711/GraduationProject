@@ -21,8 +21,6 @@
 *.exe
 *.plg
 *.opt
-*.dsw
-*.dsp
 *.pch
 *.idb
 /Release

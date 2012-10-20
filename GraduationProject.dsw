@@ -15,7 +15,19 @@ Package=<4>
 
 ###############################################################################
 
-Project: "TestWinConsole"=.\TestWinConsole\TestWinConsole.dsp - Package Owner=<4>
+Project: "ConsoleTest"=.\ConsoleTest\ConsoleTest.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "Win32Test"=.\Win32Test\Win32Test.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
