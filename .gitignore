@@ -14,6 +14,7 @@
 *.lai
 *.la
 *.a
+*.bsc
 *.obj
 *.sbr
 *.ncb
@@ -22,6 +23,8 @@
 *.opt
 *.dsw
 *.dsp
+*.pch
+*.idb
 /Release
 /Debug
 log.txt
