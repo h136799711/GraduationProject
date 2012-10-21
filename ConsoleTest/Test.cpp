@@ -1,12 +1,89 @@
 #include "..\Vector.h"
+#include "..\Geom.h"
 
-#ifdef TO_FILE_HBD
-#define NDEBUG
-#endif
+
+//#define NDEBUG
+
 #include <assert.h>
 #include "Tools.h"
-using namespace ToolsHBD;
-void TestGetSet()
+//GetSet测试
+void Test_Vector_GetSet();
+//operator操作符测试
+void Test_Vector_Operator();
+//2D,3D,4D向量，点测试
+void Test_Vector_2D3D4DDef();
+//测试vector的方法
+void Test_Vector_Functions();
+//测试vector点
+void Test_Vector_Point();
+//测试四元数
+void Test_Vector_Quad();
+//测试向量
+void TestVector();
+//测试几何，坐标系的定义
+void TestGeom();
+
+
+int main()
+{
+#ifndef TO_FILE_HBD
+	freopen("G:\\OUTPUT.txt", "w", stdout);
+	freopen("G:\\ERROR.txt", "w", stderr);
+#endif
+	printf("Test Begin\n");
+	Print_NewLine("BEGIN========================BEGIN");
+	Print_NewLine("");
+	Print_NewLine("");
+	TestVector();
+	Test_Vector_Point();
+	Print_NewLine("Test_Vector_Point Successed!!");
+	TestGeom();
+	Print_NewLine("BEGIN========================BEGIN");
+	Print_NewLine("");
+	Print_NewLine("END=========================END");
+	printf("All Test Successed!! Wooh!!! :) :) \n");
+	return 0;
+}
+
+void Test_Vector_Quad()
+{
+	CQuat quat;
+
+}
+void TestGeom()
+{
+	float arg[] = {1.0f,2.0f,3.0f};
+	CVector2D		vector2d(arg);
+	CVector3D		vector3d(arg);
+
+	CParmline2D		parmline2d(vector2d,vector2d,vector2d);
+	CParmline3D		parmline3d(vector3d,vector3d,vector3d);
+	
+	assert(vector2d == parmline2d.GetP0());
+	assert(parmline2d.GetP1() == vector2d);
+	assert(parmline2d.GetV() == vector2d);
+	
+	parmline2d.CalculateV();
+	CVector2D tmp = (vector2d - vector2d);
+	char*desc = new char [66];
+	tmp.GetString(desc);
+	Print_NewLine(desc);
+	assert(parmline2d.GetV() == tmp);
+	parmline3d.CalculateV();
+	assert(parmline3d.GetV() == (vector3d - vector3d));
+
+
+	
+	CCylinderical3D cylinderical3d;
+	CPolar2D		polar2d;
+	CSpherical3D	spherical3d;
+	CPlane2D		plane2d;
+	CPlane3D		plane3d;
+	
+
+}
+
+void Test_Vector_GetSet()
 {
 
 	CVector<> vec;
@@ -27,7 +104,8 @@ void TestGetSet()
 		assert(vec2.GetZ() == 0.0f);
 	
 }
-void TestOperator()
+
+void Test_Vector_Operator()
 {
 	float arg[] = {1.0f,2.0f};
 	CVector<> vec(arg);
@@ -61,10 +139,14 @@ void TestOperator()
 	vec += vec2;
 	assert(vec.GetX() == (arg[0] + vec2[0]));
 	assert(vec.GetY() == (arg[1] + vec2[1]));
+	CVector2D vec2d1(arg),vec2d2(arg);
+	CVector3D vec3d1(arg),vec3d2(arg);
 	
-	
+	assert(vec2d1 == vec2d2);
+	assert(vec3d1 == vec3d2);
 }
-void Test2D3D4DDef()
+
+void Test_Vector_2D3D4DDef()
 {
 	float arg[] = {1.0f,2.0f,3.0f,4.0f};
 
@@ -118,7 +200,7 @@ void Test2D3D4DDef()
 
 
 }
-void TestFunctions()
+void Test_Vector_Functions()
 {
 	FIXP16 f = FLOAT_TO_FIXP16(2.3f);
 	
@@ -169,19 +251,22 @@ void TestVector()
 	Print_NewLine("BEGIN========TestVector===========BEGIN");
 	Print_NewLine("");
 	Print_NewLine("");
-	TestGetSet();
+	Test_Vector_GetSet();
 	Print_NewLine("TestGetSet Successed!!");
-	TestOperator();
+	Test_Vector_Operator();
 	Print_NewLine("TestOperator Successed!!");
-	Test2D3D4DDef();
+	Test_Vector_2D3D4DDef();
 	Print_NewLine("Test2D3D4DDef Successed!!");
-	TestFunctions();
+	Test_Vector_Functions();
 	Print_NewLine("TestFunctions Successed!!");
+	Test_Vector_Quad();
+	Print_NewLine("Test_Vector_Quad Successed!!");
+
 	Print_NewLine("");
 	Print_NewLine("END=======TestVector=============END");
 
 }
-void TestPoint()
+void Test_Vector_Point()
 {
 	Print_NewLine("BEGIN========TestPoint===========BEGIN");
 	Print_NewLine("");
@@ -196,30 +281,4 @@ void TestPoint()
 
 
 }
-void TestQuad()
-{
 
-}
-void TestGeom()
-{
-	
-}
-
-int main()
-{
-#ifndef TO_FILE_HBD
-	freopen("G:\\OUTPUT.txt", "w", stdout);
-	freopen("G:\\ERROR.txt", "w", stderr);
-#endif
-	printf("Test Begin\n");
-	Print_NewLine("BEGIN========================BEGIN");
-	Print_NewLine("");
-	Print_NewLine("");
-	TestVector();
-	TestPoint();
-	TestGeom();
-	Print_NewLine("");
-	Print_NewLine("END=========================END");
-	printf("All Test Successed!!Wooh\n");
-	return 0;
-}

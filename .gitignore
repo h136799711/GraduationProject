@@ -26,3 +26,7 @@
 /Release
 /Debug
 log.txt
+/ConsoleTest\Debug/*.ilk
+/ConsoleTest\Debug/*.pdb
+/ConsoleTest/ERROR.txt
+/ConsoleTest/OUTPUT.txt

@@ -26,7 +26,7 @@ public:
 	/*
 	值传递，通过=操作符进行构造
 	*/
-	CVector(CVector& vec)
+	CVector(CVector<dimension>& vec)
 	{
 		*this = vec;
 	}
@@ -36,7 +36,7 @@ public:
 	*/	
 	CVector(float* pVec)
 	{
-		memcpy(m_vector,pVec,dimension*sizeof(float));
+		memcpy(m_vector,pVec,sizeof(m_vector));
 	}
 	/*
 	得到X分量值
@@ -166,7 +166,7 @@ public:
 	[]运算
 	以数组方式访问
 	*/
-	inline float operator[] (int index)
+	inline float& operator[] (int index)
 	{
 		return m_vector[index];
 	}
@@ -175,7 +175,7 @@ public:
 	赋值运算 = ,数组入参
 	
 	*/
-	inline CVector& operator = (float* vec)
+	inline CVector<dimension>& operator = (float* vec)
 	{
 		
 		memcpy(m_vector,vec,dimension * sizeof(float));
@@ -187,7 +187,7 @@ public:
 	赋值运算 = ，CVector入参
 	
 	*/
-	inline CVector& operator = (CVector& vec)
+	inline CVector<dimension>& operator = (CVector<dimension>& vec)
 	{
 		
 		for(int i=0;i<dimension;i++)
@@ -203,7 +203,7 @@ public:
 	/*
 	矩阵与浮点数 *= 
 	*/
-	inline CVector& operator *= (const float k)
+	inline CVector<dimension>& operator *= (const float k)
 	{		
 		for(int i=0;i<dimension;i++)
 		{
@@ -215,7 +215,7 @@ public:
 	/*
 	+=运算
 	*/
-	inline CVector& operator += (const CVector& vec)
+	inline CVector<dimension>& operator += (const CVector<dimension>& vec)
 	{
 		for(int i=0;i<dimension;i++)
 		{
@@ -226,7 +226,7 @@ public:
 	/*
 	-=运算
 	*/
-	inline CVector& operator -= (const CVector& vec)
+	inline CVector<dimension>& operator -= (const CVector<dimension>& vec)
 	{
 		for(int i=0;i<dimension;i++)
 		{
@@ -237,7 +237,7 @@ public:
 	/*
 	== 运算 
 	*/
-	inline bool operator == (CVector& vec)
+	inline bool operator == (CVector<dimension>& vec)
 	{
 		if(this == &vec )
 			return true;
@@ -298,7 +298,7 @@ public:
 	/*
 	向量点乘，返回点乘结果float数值
 	*/
-	float Dot(CVector& vec)
+	float Dot(CVector<dimension>& vec)
 	{
 		float result;
 		for(int i=0;i<dimension;i++)
@@ -312,7 +312,7 @@ public:
 	公式cos(theta) = (u * v )/( |u|*|v|)
 	returns the cosine of the angle between two vectors.
 	*/
-	float CosTh(CVector& vec)
+	float CosTh(CVector<dimension>& vec)
 	{
 		return (Dot(vec) / (Length()*vec.Length()));
 	}
@@ -347,7 +347,7 @@ public:
 	缩放，依赖于 *= 操作符
 	第二个参数存放结果
 	*/
-	int Scale(float k,CVector& result)
+	int Scale(float k,CVector<dimension>& result)
 	{
 		for(int i=0;i<dimension;i++)
 		{
@@ -471,7 +471,7 @@ typedef CVector<2> CPoint2D;
 typedef CVector<3> CPoint3D;
 typedef CVector<4> CPoint4D;
 
-class CQuat :public CVector<4>
+class CQuat :public CVector4D
 {
 public:
 	float GetP0()

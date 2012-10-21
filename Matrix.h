@@ -10,6 +10,19 @@ class CMatrix
 
 public:
 	float M[row][col];
+	void operator * (CMatrix& right,CMatrix& result)
+	{
+		for(int i=0;i<row;i++)
+		{
+			int sum = 0;
+			for(int j=0;j<col;j++)
+			{
+				M[i][j] *
+			}
+		}
+	}
+
+	
 };
 typedef CMatrix<1><2> CMatrix12;
 typedef CMatrix<1><3> CMatrix13;
@@ -53,4 +66,8 @@ const float M[3][3] = {1,0,0,
 // 2x2 identity matrix
 const float M[2][2] = {1,0, 
 0,1};
+typedef  M[4][4] IDentityMatrix44;
+typedef  M[4][3] IDentityMatrix43;
+typedef  M[3][3] IDentityMatrix33;
+typedef  M[2][2] IDentityMatrix22;
 
