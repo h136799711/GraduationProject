@@ -91,6 +91,10 @@ LINK32=link.exe
 # Begin Group "3DMathcpp"
 
 # PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\Vector.cpp
+# End Source File
 # End Group
 # Begin Group "2DEngineCPP"
 
@@ -201,9 +205,25 @@ SOURCE=.\HCLib\HCWindowBuilder.h
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=.\Geom.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Math3D.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\Vector.h
 # End Source File
 # End Group
+# Begin Source File
+
+SOURCE=.\MathDef.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Matrix.h
+# End Source File
 # End Group
 # Begin Group "Resource Files"
 

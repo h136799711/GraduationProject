@@ -1,7 +1,6 @@
 #include "HCMath.h"
 
 
-
 float HCMath::Fast_Distance_3D(float fx, float fy, float fz)
 {
 	// this function computes the distance from the origin to x,y,z
@@ -42,6 +41,7 @@ int HCMath::Fast_Distance_2D(int x, int y)
 	return(x+y-(mn>>1)-(mn>>2)+(mn>>4));
 	
 } // end Fast_Distance_2D
+
 
 
 

@@ -1,5 +1,6 @@
 #ifndef H_HCMATH_INCLUDED
 #define H_HCMATH_INCLUDED
+
 /***************************************************************************************
 **数学引擎支持2D,3D,4D点和向量。其中4D表示格式为(x,y,z,w)的齐次坐标。
 **				
@@ -98,9 +99,6 @@ public:
 	int Fast_Distance_2D(int x, int y);
 	float Fast_Distance_3D(float x, float y, float z);
 };
-
-
-
 
 
 
