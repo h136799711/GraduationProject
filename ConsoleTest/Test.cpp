@@ -104,7 +104,6 @@ void Test_Vector_GetSet()
 		assert(vec2.GetZ() == 0.0f);
 	
 }
-
 void Test_Vector_Operator()
 {
 	float arg[] = {1.0f,2.0f};
@@ -281,4 +280,3 @@ void Test_Vector_Point()
 
 
 }
-

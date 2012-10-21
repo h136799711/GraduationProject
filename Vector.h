@@ -26,6 +26,7 @@ public:
 	/*
 	值传递，通过=操作符进行构造
 	*/
+
 	CVector(CVector<dimension>& vec)
 	{
 		*this = vec;
@@ -175,6 +176,7 @@ public:
 	赋值运算 = ,数组入参
 	
 	*/
+
 	inline CVector<dimension>& operator = (float* vec)
 	{
 		
@@ -188,6 +190,7 @@ public:
 	
 	*/
 	inline CVector<dimension>& operator = (CVector<dimension>& vec)
+
 	{
 		
 		for(int i=0;i<dimension;i++)
@@ -203,7 +206,9 @@ public:
 	/*
 	矩阵与浮点数 *= 
 	*/
+
 	inline CVector<dimension>& operator *= (const float k)
+
 	{		
 		for(int i=0;i<dimension;i++)
 		{
@@ -216,6 +221,7 @@ public:
 	+=运算
 	*/
 	inline CVector<dimension>& operator += (const CVector<dimension>& vec)
+
 	{
 		for(int i=0;i<dimension;i++)
 		{
@@ -226,7 +232,9 @@ public:
 	/*
 	-=运算
 	*/
+
 	inline CVector<dimension>& operator -= (const CVector<dimension>& vec)
+
 	{
 		for(int i=0;i<dimension;i++)
 		{
@@ -237,8 +245,11 @@ public:
 	/*
 	== 运算 
 	*/
+
+
 	inline bool operator == (CVector<dimension>& vec)
-	{
+
+{
 		if(this == &vec )
 			return true;
 		for(int i=0;i<dimension;i++)
@@ -298,8 +309,11 @@ public:
 	/*
 	向量点乘，返回点乘结果float数值
 	*/
+<<<<<<< HEAD
 	float Dot(CVector<dimension>& vec)
-	{
+
+	
+{
 		float result;
 		for(int i=0;i<dimension;i++)
 		{
@@ -312,7 +326,9 @@ public:
 	公式cos(theta) = (u * v )/( |u|*|v|)
 	returns the cosine of the angle between two vectors.
 	*/
+
 	float CosTh(CVector<dimension>& vec)
+
 	{
 		return (Dot(vec) / (Length()*vec.Length()));
 	}
@@ -332,7 +348,8 @@ public:
 		m_vector[Y] *= w_inv;
 		m_vector[Z] *= w_inv;
 		
-		return 1;
+
+	return 1;
 	}
 	/*
 	缩放，依赖于 *= 操作符
@@ -347,8 +364,7 @@ public:
 	缩放，依赖于 *= 操作符
 	第二个参数存放结果
 	*/
-	int Scale(float k,CVector<dimension>& result)
-	{
+	int Scale(float k,CVector<dimension>& result)	{
 		for(int i=0;i<dimension;i++)
 		{
 			result.m_vector[i] = m_vector[i] * k;

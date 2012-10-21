@@ -10,6 +10,7 @@ class CMatrix
 
 public:
 	float M[row][col];
+
 	void operator * (CMatrix& right,CMatrix& result)
 	{
 		for(int i=0;i<row;i++)
@@ -17,7 +18,7 @@ public:
 			int sum = 0;
 			for(int j=0;j<col;j++)
 			{
-				M[i][j] *
+				
 			}
 		}
 	}
