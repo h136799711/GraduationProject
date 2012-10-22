@@ -1,13 +1,14 @@
 #ifndef H_VECTOR_INCLUDED
 #define H_VECTOR_INCLUDED
+
 #include<iostream>
 #include<assert.h>
 #include "MathDef.h"
 #include "HCLib\HCMath.h"
 
-int Fast_Distance_2D(int x, int y);
-float Fast_Distance_3D(float fx, float fy, float fz);
 
+//int Fast_Distance_2D(int x, int y);
+//float Fast_Distance_3D(float x, float y, float z);
 #define X 0
 #define Y 1
 #define Z 2
@@ -22,16 +23,7 @@ public:
 	CVector()
 	{
 		Zero();
-	}
-	/*
-	值传递，通过=操作符进行构造
-	*/
-
-	CVector(CVector<dimension>& vec)
-	{
-		*this = vec;
-	}
-	
+	}	
 	/*
 	通过传入float数组,确保float数组长度有dimension的长度
 	*/	
@@ -176,21 +168,17 @@ public:
 	赋值运算 = ,数组入参
 	
 	*/
-
-	inline CVector<dimension>& operator = (float* vec)
-	{
-		
-		memcpy(m_vector,vec,dimension * sizeof(float));
-		
+	
+	inline CVector<dimension> operator = (float* vec)
+	{		
+		memcpy(m_vector,vec,dimension * sizeof(float));		
 		return *this;
-		
 	}
 	/*
 	赋值运算 = ，CVector入参
 	
 	*/
-	inline CVector<dimension>& operator = (CVector<dimension>& vec)
-
+	inline CVector<dimension> operator = (CVector<dimension> vec)
 	{
 		
 		for(int i=0;i<dimension;i++)
@@ -206,9 +194,9 @@ public:
 	/*
 	矩阵与浮点数 *= 
 	*/
-
+	
 	inline CVector<dimension>& operator *= (const float k)
-
+		
 	{		
 		for(int i=0;i<dimension;i++)
 		{
@@ -221,7 +209,7 @@ public:
 	+=运算
 	*/
 	inline CVector<dimension>& operator += (const CVector<dimension>& vec)
-
+		
 	{
 		for(int i=0;i<dimension;i++)
 		{
@@ -232,9 +220,8 @@ public:
 	/*
 	-=运算
 	*/
-
+	
 	inline CVector<dimension>& operator -= (const CVector<dimension>& vec)
-
 	{
 		for(int i=0;i<dimension;i++)
 		{
@@ -245,11 +232,10 @@ public:
 	/*
 	== 运算 
 	*/
-
-
+	
+	
 	inline bool operator == (CVector<dimension>& vec)
-
-{
+	{
 		if(this == &vec )
 			return true;
 		for(int i=0;i<dimension;i++)
@@ -277,13 +263,13 @@ public:
 	*/
 	float Fast_Length()
 	{
-
+		HCMath hcmath;
 		switch(dimension)
 		{
 		case 2:
-			return (float)Fast_Distance_2D(m_vector[0],m_vector[1]);
+			return (float)hcmath.Fast_Distance_2D(m_vector[0],m_vector[1]);
 		case 3:
-			return (float)Fast_Distance_3D(m_vector[0],m_vector[1],m_vector[2]);
+			return (float)hcmath.Fast_Distance_3D(m_vector[0],m_vector[1],m_vector[2]);
 		default:
 			break;
 		}
@@ -309,15 +295,12 @@ public:
 	/*
 	向量点乘，返回点乘结果float数值
 	*/
-<<<<<<< HEAD
-	float Dot(CVector<dimension>& vec)
-
-	
-{
-		float result;
+	float Dot(CVector<dimension>& vec)	
+	{
+		float result=0;
 		for(int i=0;i<dimension;i++)
 		{
-			m_vector[i] *= vec.m_vector[i];
+			result = result + m_vector[i] * vec.m_vector[i];
 		}
 		return result;
 	}
@@ -326,9 +309,8 @@ public:
 	公式cos(theta) = (u * v )/( |u|*|v|)
 	returns the cosine of the angle between two vectors.
 	*/
-
 	float CosTh(CVector<dimension>& vec)
-
+		
 	{
 		return (Dot(vec) / (Length()*vec.Length()));
 	}
@@ -348,8 +330,8 @@ public:
 		m_vector[Y] *= w_inv;
 		m_vector[Z] *= w_inv;
 		
-
-	return 1;
+		
+		return 1;
 	}
 	/*
 	缩放，依赖于 *= 操作符
@@ -364,15 +346,56 @@ public:
 	缩放，依赖于 *= 操作符
 	第二个参数存放结果
 	*/
-	int Scale(float k,CVector<dimension>& result)	{
+	int Scale(float k,CVector<dimension>& result)
+	{
 		for(int i=0;i<dimension;i++)
 		{
 			result.m_vector[i] = m_vector[i] * k;
 		}		
 		return 1;
 	}
+	/*
+		向量的叉积,
+		结果为垂直于叉积的2个向量
+	*/
+	int Cross(CVector<dimension> right,CVector<dimension>& result)
+	{
+		result.SetX((GetY()*right.GetZ() - GetZ()*right.GetY()));
+		result.SetY((GetX()*right.GetZ() - GetZ()*right.GetX()));
+		result.SetZ((GetX()*right.GetY() - GetY()*right.GetX()));
+
+		return 1;	
+	}
+	CVector<dimension> operator +(CVector<dimension> &  right)
+	{	
+		CVector<dimension> result;
+		
+		for (int i=0; i<dimension; i++)
+			result.SetByIndex(i,m_vector[i] + right.m_vector[i]);
+		
+		return result;
+	}
 	
-	
+	CVector<dimension> operator -(CVector<dimension> &  right)
+	{
+		
+		CVector<dimension> result;
+		
+		for (int i=0; i<dimension; i++)
+			result.SetByIndex(i,m_vector[i] - right.m_vector[i]);
+		
+		return result;
+	}
+	float operator *(CVector<dimension> right)
+	{
+		float result = 0;
+		for(int i=0;i<dimension;i++)
+		{
+			result += (m_vector[i] * right.m_vector[i]);
+		}
+		return result;
+	}
+
 	float m_vector[dimension];
 	
 				
@@ -416,27 +439,7 @@ int CVector<dimension>::GetString(char* desc)
 
 
 //global operator 
-template<int dimension>
-CVector<dimension> operator +(CVector<dimension> & left,CVector<dimension> &  right)
-{	
-	CVector<dimension> result;
-	
-	for (int i=0; i<dimension; i++)
-		result.SetByIndex(i,left.m_vector[i] + right.m_vector[i]);
-	
-	return result;
-}
-template<int dimension>
-CVector<dimension> operator -(CVector<dimension>  & left,CVector<dimension> &  right)
-{
-	
-	CVector<dimension> result;
-	
-	for (int i=0; i<dimension; i++)
-		result.SetByIndex(i,left.m_vector[i] - right.m_vector[i]);
-	
-	return result;
-}
+/*
 float Fast_Distance_3D(float fx, float fy, float fz)
 {
 	// this function computes the distance from the origin to x,y,z
@@ -478,7 +481,7 @@ int Fast_Distance_2D(int x, int y)
 	
 } // end Fast_Distance_2D
 
-
+  */
 //2D,3D,4D点，向量定义
 typedef CVector<2>  CVector2D;
 typedef CVector<3>	CVector3D;
@@ -487,18 +490,203 @@ typedef CVector<2> CPoint2D;
 typedef CVector<3> CPoint3D;
 typedef CVector<4> CPoint4D;
 
+/*******
+	
+	  四元数：超复数
+	  与3D向量，角度之间的关系
+	  有以下公式
+	  四元数 : Quat,q0为quat的w分量,qv为quat的x，y，z3个分量组合的3D向量
+	  theta : 角度(度数)
+	  v : 3D向量
+	  Quat = cos(theta/2) + sin(theta/2) * v;
+	  cos(theta/2) = q0;
+	  sin(theta/2) * v = qv;
+
+*************/
 class CQuat :public CVector4D
 {
 public:
+	CQuat()
+	{
+		Zero();
+	}
+	CQuat(float q0,CVector3D qv)
+	{	
+		SetP0(q0);
+	}
 	float GetP0()
 	{
-		return m_vector[0];
+		return GetW();
 	}
-	int GetQV(CVector3D& qv)
+	/*******
+	*******
+	*******
+	*******
+	*************/
+	int SetP0(float q0)
 	{
-		qv = m_vector;
-		return 1;	
+		SetW(q0);
+		return 1;
 	}
+	int GetQv(CVector3D& qv)
+	{
+		qv.SetX(GetX());
+		qv.SetY(GetY());
+		qv.SetZ(GetZ());
+		return 1;
+	}
+	int SetQv(CVector3D qv)
+	{
+		SetX(qv.GetX());
+		SetY(qv.GetY());
+		SetZ(qv.GetZ());
+		return 1;
+	}
+	/*
+		范数 等效于向量的长度
+	*/
+	float Norm()
+	{
+		return Length();
+	}
+	/*
+		范数的平方
+	*/
+	float Norm2()
+	{
+		return (GetX()*GetX() + GetY()*GetY() + GetZ()*GetZ() + GetW()*GetW());
+	}
+	/*
+		即范数为 1 的复数
+		称为Unit
+		Unit的倒数即是其共轭复数
+	*/
+	void Unit_Inverse()
+	{
+		SetX(-GetX());
+		SetY(-GetY());
+		SetZ(-GetZ());
+	}
+	/*
+		倒数
+	*/
+	void Inverse()
+	{
+		// 1/q = *q / |q|2
+		float norm2_inv = 1.0f / Norm2();
+
+		SetW(GetW() * norm2_inv);
+		SetX(-GetX() * norm2_inv);
+		SetY(-GetY() * norm2_inv);
+		SetZ(-GetZ() * norm2_inv);
+	}
+	/*
+		复数的乘法
+	*/
+	void Mul(CQuat right,CQuat& result)
+	{
+		
+		float prd_0 = (GetZ() - GetY()) * (right.GetY() - right.GetZ());
+		float prd_1 = (GetW() + GetX()) * (right.GetW() + right.GetX());
+		float prd_2 = (GetW() - GetX()) * (right.GetY() + right.GetZ());
+		float prd_3 = (GetY() + GetZ()) * (right.GetW() - right.GetX());
+		float prd_4 = (GetZ() - GetX()) * (right.GetX() - right.GetY());
+		float prd_5 = (GetZ() + GetX()) * (right.GetX() + right.GetY());
+		float prd_6 = (GetW() + GetY()) * (right.GetW() - right.GetZ());
+		float prd_7 = (GetW() - GetY()) * (right.GetW() + right.GetZ());
+
+		float prd_8 = prd_5 + prd_6 + prd_7;
+		float prd_9 = 0.5 * (prd_4 + prd_8);
+
+		// and finally build up the result with the temporary products
+
+		result.SetW(prd_0 + prd_9 - prd_5);
+		result.SetX(prd_1 + prd_9 - prd_8);
+		result.SetY(prd_2 + prd_9 - prd_7);
+		result.SetZ(prd_3 + prd_9 - prd_6);
+		
+	}
+	void Triple_Product(CQuat middle,CQuat right,CQuat& result)
+	{
+		Mul(middle,result);
+		*this = result;
+		Mul(right,result);
+	}
+	/*
+		使用一个3D方向向量(归一化)
+		和一个旋转角度(弧度)来初始化四元数
+	*/
+	void Init_With_Vector3D_Theta(CVector3D v,float theta)
+	{
+		float theta_div_2 = (0.5)*theta;
+		float sinf_theta = sinf(theta_div_2);
+
+		SetX(sinf_theta * v.GetX());
+		SetY(sinf_theta * v.GetY());
+		SetZ(sinf_theta * v.GetZ());
+		SetW(cosf(theta_div_2));
+
+	}
+	/*
+		使用一个3D方向向量(归一化)
+		和一个旋转角度(弧度)来初始化四元数
+	*/
+	void Init_With_Vector3D_Theta(CVector4D v,float theta)
+	{
+		float theta_div_2 = (0.5)*theta;
+		float sinf_theta = sinf(theta_div_2);
+
+		SetX(sinf_theta * v.GetX());
+		SetY(sinf_theta * v.GetY());
+		SetZ(sinf_theta * v.GetZ());
+		SetW(cosf(theta_div_2));
+
+	}
+	/*
+		根据绕x、y、z旋转的角度，创建一个zyx顺序进行旋转对应的四元数
+		四元数qfinal
+		qxtheta: xtheta绕x轴旋转的角度(倾角)
+		qytheta: ytheta绕y轴旋转的角度(偏航角)
+		qztheta: ztheta绕z轴旋转的角度(倾侧角)
+		i,j,k是x，y，z轴上的方向放量
+		qxtheta = cos(xtheta / 2) + sin(xtheta/2)*i + 0 *j+0*k;
+				
+		qfinal= qxtheta * qytheta*qztheta
+				= qztheta * qytheta*qytheta
+
+	**/
+	void Init_With_EulerZYX(float theta_z, float theta_y, float theta_x)
+	{
+				
+		// precompute values
+		float cos_z_2 = 0.5*cosf(theta_z);
+		float cos_y_2 = 0.5*cosf(theta_y);
+		float cos_x_2 = 0.5*cosf(theta_x);
+
+		float sin_z_2 = 0.5*sinf(theta_z);
+		float sin_y_2 = 0.5*sinf(theta_y);
+		float sin_x_2 = 0.5*sinf(theta_x);
+
+		// and now compute quaternion
+		SetW(cos_z_2*cos_y_2*cos_x_2 + sin_z_2*sin_y_2*sin_x_2);
+		SetX(cos_z_2*cos_y_2*sin_x_2 - sin_z_2*sin_y_2*cos_x_2);
+		SetY(cos_z_2*sin_y_2*cos_x_2 + sin_z_2*cos_y_2*sin_x_2);
+		SetZ(sin_z_2*cos_y_2*cos_x_2 - cos_z_2*sin_y_2*sin_x_2);
+	}
+	//将一个单位四元数转换为一个单位方向向量和一个绕该向量旋转的角度
+	int Get_Vecotr3D_Theta(CVector3D& v,float& theta)
+	{
+		theta = acosf(GetW());
+		float sin_theta_inv = 1.0 / sinf(theta);
+
+		SetX(v.GetX() * sin_theta_inv);
+		SetY(v.GetY() * sin_theta_inv);
+		SetZ(v.GetZ() * sin_theta_inv);
+		
+		theta *= 2;
+		return 1;
+	}
+
 };
 
 

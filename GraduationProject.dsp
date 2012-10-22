@@ -93,6 +93,10 @@ LINK32=link.exe
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=.\Math3D.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\Vector.cpp
 # End Source File
 # End Group
@@ -213,17 +217,17 @@ SOURCE=.\Math3D.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\Vector.h
-# End Source File
-# End Group
-# Begin Source File
-
 SOURCE=.\MathDef.h
 # End Source File
 # Begin Source File
 
 SOURCE=.\Matrix.h
 # End Source File
+# Begin Source File
+
+SOURCE=.\Vector.h
+# End Source File
+# End Group
 # End Group
 # Begin Group "Resource Files"
 
