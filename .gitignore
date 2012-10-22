@@ -30,3 +30,6 @@ log.txt
 /ConsoleTest\Debug/*.pdb
 /ConsoleTest/ERROR.txt
 /ConsoleTest/OUTPUT.txt
+/ConsoleTest/Debug
+/ConsoleTest/Release
+/ConsoleTest/Debug

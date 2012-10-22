@@ -62,17 +62,17 @@ public:
 	*/
 	int Mat_Mul_XC_CY(int x,int c,int y,float *ma,float *mb,float *result);
 	//3D向量与3X3矩阵
-	int Mat_Mul_3D_33(CVector3D v3d,CMatrix33 m33,CVector3D rst);
+	int Mat_Mul_3D_33(CVector3D v3d,CMatrix33 m33,CVector3D& rst);
 	//3d向量与4X4矩阵
-	int Mat_Mul_3D_44(CVector3D v3d,CMatrix44 m44,CVector3D rst);
+	int Mat_Mul_3D_44(CVector3D v3d,CMatrix44 m44,CVector3D& rst);
 	//3d向量与4X3矩阵
-	int Mat_Mul_3D_43(CVector3D v3d,CMatrix43 m43,CVector3D rst);
+	int Mat_Mul_3D_43(CVector3D v3d,CMatrix43 m43,CVector3D& rst);
 	//4d向量与4X4矩阵
-	int Mat_Mul_4D_44(CVector4D v4d,CMatrix44 m44,CVector4D rst);
+	int Mat_Mul_4D_44(CVector4D v4d,CMatrix44 m44,CVector4D& rst);
 	//4d向量与4X3矩阵
-	int Mat_Mul_4D_43(CVector4D v4d,CMatrix43 m43,CVector4D rst);
+	int Mat_Mul_4D_43(CVector4D v4d,CMatrix43 m43,CVector4D& rst);
 	//14矩阵与4X4矩阵
-	int Mat_Mul_14_44(CMatrix14 v14,CMatrix44 m44,CMatrix14 rst);
+	int Mat_Mul_14_44(CMatrix14 v14,CMatrix44 m44,CMatrix14& rst);
 	/*
 	计算点是否在3D平面上，
 	返回hs
@@ -408,7 +408,7 @@ int CMath3D::Solve_3X3_System(CMatrix33 mA, CMatrix13& mX, CMatrix13 mB)
 	return 1;
 }
 
-int CMath3D::Mat_Mul_3D_33(CVector3D v3d,CMatrix33 m33,CVector3D rst)
+int CMath3D::Mat_Mul_3D_33(CVector3D v3d,CMatrix33 m33,CVector3D& rst)
 {
 	
 	for (int col=0; col < 3; col++)
@@ -429,7 +429,7 @@ int CMath3D::Mat_Mul_3D_33(CVector3D v3d,CMatrix33 m33,CVector3D rst)
 }
 
 
-int CMath3D::Mat_Mul_3D_44(CVector3D v3d,CMatrix44 m44,CVector3D rst)
+int CMath3D::Mat_Mul_3D_44(CVector3D v3d,CMatrix44 m44,CVector3D& rst)
 {
 	int col,row;
     for (col=0; col < 3; col++)
@@ -454,7 +454,7 @@ int CMath3D::Mat_Mul_3D_44(CVector3D v3d,CMatrix44 m44,CVector3D rst)
 	return 1;
 }
 //3d向量与4X3矩阵
-int CMath3D::Mat_Mul_3D_43(CVector3D v3d,CMatrix43 m43,CVector3D rst)
+int CMath3D::Mat_Mul_3D_43(CVector3D v3d,CMatrix43 m43,CVector3D& rst)
 {
 	int col,row;
     for (col=0; col < 3; col++)
@@ -479,7 +479,7 @@ int CMath3D::Mat_Mul_3D_43(CVector3D v3d,CMatrix43 m43,CVector3D rst)
 	return 1;
 }
 //4d向量与4X4矩阵
-int CMath3D::Mat_Mul_4D_44(CVector4D v4d,CMatrix44 m44,CVector4D rst)
+int CMath3D::Mat_Mul_4D_44(CVector4D v4d,CMatrix44 m44,CVector4D& rst)
 { 
 	for (int col=0; col < 4; col++)
 	{
@@ -500,7 +500,7 @@ int CMath3D::Mat_Mul_4D_44(CVector4D v4d,CMatrix44 m44,CVector4D rst)
 	return 1;
 }
 //4d向量与4X3矩阵
-int CMath3D::Mat_Mul_4D_43(CVector4D v4d,CMatrix43 m43,CVector4D rst)
+int CMath3D::Mat_Mul_4D_43(CVector4D v4d,CMatrix43 m43,CVector4D& rst)
 {
 	for (int col=0; col < 3; col++)
 	{
@@ -524,7 +524,7 @@ int CMath3D::Mat_Mul_4D_43(CVector4D v4d,CMatrix43 m43,CVector4D rst)
 	return 1;
 }
 //14矩阵与4X4矩阵
-int CMath3D::Mat_Mul_14_44(CMatrix14 m14,CMatrix44 m44,CMatrix14 rst)
+int CMath3D::Mat_Mul_14_44(CMatrix14 m14,CMatrix44 m44,CMatrix14& rst)
 {
     for (int col=0; col<4; col++)
 	{
