@@ -88,18 +88,6 @@ LINK32=link.exe
 # Begin Group "Source Files"
 
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
-# Begin Group "3DMathcpp"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=.\Math3D.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\Vector.cpp
-# End Source File
-# End Group
 # Begin Group "2DEngineCPP"
 
 # PROP Default_Filter ""
@@ -226,6 +214,26 @@ SOURCE=.\Matrix.h
 # Begin Source File
 
 SOURCE=.\Vector.h
+# End Source File
+# End Group
+# Begin Group "Render3D"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\ObjectDef.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Render3D.h
+# End Source File
+# End Group
+# Begin Group "ModelLoader"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\PLGLoader.h
 # End Source File
 # End Group
 # End Group

@@ -261,6 +261,7 @@ public:
 	快速计算向量长度，误差较大
 	根据公式
 	*/
+	
 	float Fast_Length()
 	{
 		HCMath hcmath;

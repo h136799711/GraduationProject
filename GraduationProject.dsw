@@ -3,7 +3,7 @@ Microsoft Developer Studio Workspace File, Format Version 6.00
 
 ###############################################################################
 
-Project: "GraduationProject"=.\GraduationProject.dsp - Package Owner=<4>
+Project: "ConsoleTest"=.\ConsoleTest\ConsoleTest.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -15,7 +15,19 @@ Package=<4>
 
 ###############################################################################
 
-Project: "ConsoleTest"=.\ConsoleTest\ConsoleTest.dsp - Package Owner=<4>
+Project: "ConsoleTest2"=.\ConsoleTest2\ConsoleTest2.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "GraduationProject"=.\GraduationProject.dsp - Package Owner=<4>
 
 Package=<5>
 {{{

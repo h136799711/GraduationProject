@@ -96,50 +96,48 @@ public:
 							float m10, float m11,
 							float m20, float m21);
 	// math functions
-int Fast_Distance_2D(int x, int y);
-float Fast_Distance_3D(float x, float y, float z);
+	float Fast_Distance_3D(float fx, float fy, float fz)
+	{
+		// this function computes the distance from the origin to x,y,z
+		
+		int temp;  // used for swaping
+		int x,y,z; // used for algorithm
+		
+		// make sure values are all positive
+		x = fabs(fx) * 1024;
+		y = fabs(fy) * 1024;
+		z = fabs(fz) * 1024;
+		
+		// sort values
+		if (y < x) SWAP(x,y,temp)
+			
+			if (z < y) SWAP(y,z,temp)
+				
+				if (y < x) SWAP(x,y,temp)
+					
+					int dist = (z + 11*(y >> 5) + (x >> 2) );
+				
+				// compute distance with 8% error
+				return((float)(dist >> 10));
+				
+	} // end Fast_Distance_3D
+	int Fast_Distance_2D(int x, int y)
+	{
+		// this function computes the distance from 0,0 to x,y with 3.5% error
+		
+		// first compute the absolute value of x,y
+		x = abs(x);
+		y = abs(y);
+		
+		// compute the minimum of x,y
+		int mn = MIN(x,y);
+		
+		// return the distance
+		return(x+y-(mn>>1)-(mn>>2)+(mn>>4));
+		
+	} // end Fast_Distance_2D
 };
 
-float HCMath::Fast_Distance_3D(float fx, float fy, float fz)
-{
-	// this function computes the distance from the origin to x,y,z
-	
-	int temp;  // used for swaping
-	int x,y,z; // used for algorithm
-	
-	// make sure values are all positive
-	x = fabs(fx) * 1024;
-	y = fabs(fy) * 1024;
-	z = fabs(fz) * 1024;
-	
-	// sort values
-	if (y < x) SWAP(x,y,temp)
-		
-		if (z < y) SWAP(y,z,temp)
-			
-			if (y < x) SWAP(x,y,temp)
-				
-				int dist = (z + 11*(y >> 5) + (x >> 2) );
-			
-			// compute distance with 8% error
-			return((float)(dist >> 10));
-			
-} // end Fast_Distance_3D
-int HCMath::Fast_Distance_2D(int x, int y)
-{
-	// this function computes the distance from 0,0 to x,y with 3.5% error
-	
-	// first compute the absolute value of x,y
-	x = abs(x);
-	y = abs(y);
-	
-	// compute the minimum of x,y
-	int mn = MIN(x,y);
-	
-	// return the distance
-	return(x+y-(mn>>1)-(mn>>2)+(mn>>4));
-	
-} // end Fast_Distance_2D
 
 
 

@@ -2,11 +2,11 @@
 
 #pragma comment (lib,"dxguid.lib")//GUID的定义包括
 
-#include "HCLib\HCDXBuilder.h"
-#include "HCLib\HCInput.h"
-#include "HCReturnType.h"
-#include "ObjectDef.h"
-#include "Render3D.h"
+#include "..\HCLib\HCDXBuilder.h"
+#include "..\HCLib\HCInput.h"
+#include "..\HCReturnType.h"
+#include "..\ObjectDef.h"
+#include "..\Render3D.h"
 
 
 #ifdef SCREEN_BPP
