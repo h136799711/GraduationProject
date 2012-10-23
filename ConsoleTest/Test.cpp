@@ -1,4 +1,10 @@
-
+/*****************************************************************************************
+**	Version: 2.0v																**********
+**	author:hebidu.																**********
+**	Description:TestProject about math library.									**********
+**	To ensure the correctness of the math library								**********
+**	date :2012-10-23	13:00													**********	
+*****************************************************************************************/
 #include "..\HCLib\HCMath.h"
 #include "..\Vector.h"
 #include "..\Geom.h"
@@ -103,23 +109,50 @@ void TestMath3D()
 	float argv[4] = {1.0f,2.0f,4.0f};
 	CMatrix14 m14a(&arg[0][0]),m14b(&arg[0][0]);
 	CMatrix44 m44(&arg[0][0]);
-	CVector3D v3d(argv),rst;
+	CVector3D v3d(argv),rst,rst2;
 	CMatrix33 m33(&arg[0][0]);
 	CMatrix43 m43(&arg[0][0]);
 	CVector4D v4d(argv);
 	CVector4D rst4d;
 	math3d.Mat_Mul_14_44(m14a,m44,m14b);
-	math3d.Mat_Mul_3D_33(v3d,m33,rst);
-	math3d.Mat_Mul_3D_43(v3d,m43,rst);
-	math3d.Mat_Mul_3D_44(v3d,m44,rst);
-	math3d.Mat_Mul_4D_43(v4d,m43,rst4d);
-	math3d.Mat_Mul_4D_44(v4d,m44,rst4d);
 	CVector4D rst4dTmp;
-	math3d.Mat_Mul_XC_CY(1,4,4,v4d.m_vector,&m44.M[0][0],rst4dTmp.m_vector);
+	math3d.Mat_Mul_XC_CY(1,4,4,&m14a.M[0][0],&m44.M[0][0],rst4dTmp.m_vector);	
+	assert(fabs(m14b.M[0][X] - rst4dTmp.GetX()) <= EPSILON_E5 );
+	assert(fabs(m14b.M[0][Y] - rst4dTmp.GetY()) <= EPSILON_E5 );
+	assert(fabs(m14b.M[0][Z] - rst4dTmp.GetZ()) <= EPSILON_E5 );
 
+	math3d.Mat_Mul_3D_33(v3d,m33,rst);
+	math3d.Mat_Mul_XC_CY(1,3,3,v3d.m_vector,&m33.M[0][0],rst2.m_vector);	
+	assert(fabs(rst.GetX() - rst2.GetX()) <= EPSILON_E5 );
+	assert(fabs(rst.GetY() - rst2.GetY()) <= EPSILON_E5 );
+	assert(fabs(rst.GetZ() - rst2.GetZ()) <= EPSILON_E5 );
+
+	v4d.SetW(1);
+	v3d = v4d.m_vector;
+	math3d.Mat_Mul_3D_43(v3d,m43,rst);
+	math3d.Mat_Mul_XC_CY(1,4,3,v4d.m_vector,&m43.M[0][0],rst2.m_vector);	
+	assert(fabs(rst.GetX() - rst2.GetX()) <= EPSILON_E5 );
+	assert(fabs(rst.GetY() - rst2.GetY()) <= EPSILON_E5 );
+	assert(fabs(rst.GetZ() - rst2.GetZ()) <= EPSILON_E5 );
+
+	math3d.Mat_Mul_3D_44(v3d,m44,rst);
+	math3d.Mat_Mul_XC_CY(1,4,4,v4d.m_vector,&m44.M[0][0],rst2.m_vector);	
+	assert(fabs(rst.GetX() - rst2.GetX()) <= EPSILON_E5 );
+	assert(fabs(rst.GetY() - rst2.GetY()) <= EPSILON_E5 );
+	assert(fabs(rst.GetZ() - rst2.GetZ()) <= EPSILON_E5 );
+
+	math3d.Mat_Mul_4D_43(v4d,m43,rst4d);
+	math3d.Mat_Mul_XC_CY(1,4,3,v4d.m_vector,&m43.M[0][0],rst4dTmp.m_vector);
 	assert(fabs(rst4d.GetX() - rst4dTmp.GetX()) <= EPSILON_E5 );
 	assert(fabs(rst4d.GetY() - rst4dTmp.GetY()) <= EPSILON_E5 );
 	assert(fabs(rst4d.GetZ() - rst4dTmp.GetZ()) <= EPSILON_E5 );
+
+	math3d.Mat_Mul_4D_44(v4d,m44,rst4d);
+	math3d.Mat_Mul_XC_CY(1,4,4,v4d.m_vector,&m44.M[0][0],rst4dTmp.m_vector);
+	assert(fabs(rst4d.GetX() - rst4dTmp.GetX()) <= EPSILON_E5 );
+	assert(fabs(rst4d.GetY() - rst4dTmp.GetY()) <= EPSILON_E5 );
+	assert(fabs(rst4d.GetZ() - rst4dTmp.GetZ()) <= EPSILON_E5 );	
+
 
 }
 
@@ -210,21 +243,33 @@ void TestGeom()
 	CVector2D		vector2d(arg);
 	CVector3D		vector3d(arg);
 
-	CParmline2D		parmline2d(vector2d,vector2d,vector2d);
-	CParmline3D		parmline3d(vector3d,vector3d,vector3d);
+	CParmline2D		parmline2d(vector2d,vector2d*2);
+	CParmline3D		parmline3d(vector3d,vector3d*2);
 	
 	assert(vector2d == parmline2d.GetP0());
-	assert(parmline2d.GetP1() == vector2d);
-	assert(parmline2d.GetV() == vector2d);
+	assert(parmline2d.GetP1() == vector2d*2);
 	
-	parmline2d.CalculateV();
-	CVector2D tmp = (vector2d - vector2d);
-
+	CVector2D tmp = (vector2d*2 - vector2d);
+	
 	assert(parmline2d.GetV() == tmp);
-	parmline3d.CalculateV();
-	assert(parmline3d.GetV() == (vector3d - vector3d));
 
-
+	assert(parmline3d.GetV() == (vector3d*2 - vector3d));
+	
+	int ist_rst = parmline2d.Intersect_Parm_Lines(parmline2d,vector2d);
+	assert(ist_rst == PARM_LINE_NO_INTERSECT);
+	CParmline2D pline2dTmp;
+	pline2dTmp  = parmline2d;
+	CPoint2D p12d =  parmline2d.GetP1();
+	p12d.SetY(2.0f);parmline2d.SetP1(p12d);
+	p12d =  parmline2d.GetP0();
+	p12d.SetX(0.0f);
+	p12d.SetY(1.0f);
+	parmline2d.SetP0(p12d);
+	
+	ist_rst = pline2dTmp.Intersect_Parm_Lines(parmline2d,vector2d);
+	assert(ist_rst != PARM_LINE_NO_INTERSECT);
+	assert(ist_rst != PARM_LINE_INTERSECT_IN_SEGMENT);
+	assert(ist_rst == PARM_LINE_INTERSECT_OUT_SEGMENT);
 	//2D 坐标系 极坐标转换
 	CMath3D	math3d;
 	CPolar2D		polar2d;
@@ -287,12 +332,43 @@ void TestGeom()
 	assert(fabs(mX3.M[0][1] - (1.5f)) < EPSILON_E5);
 	assert(fabs(mX3.M[0][2] - (0.0f)) < EPSILON_E5);
 
-	//测试相交
+	//测试相交	
+	float pt_arr [] = {0.0f,0.0f,0.0f};
+//	float plane_arr[] = {}
+	CPlane3D		plane3d;
+	CPoint3D		pt;
+	pt = pt_arr;
+	float normal_arr[] = {0.0f,-1.0f,0.0f};
+	CVector3D		normal(normal_arr);
+	plane3d.Init(pt,normal);
+	
+	float hs = plane3d.Compute_Point_In(pt);	
+	printf("hs = %f",hs);
+	pt_arr[0] = 2.0f;
+	pt_arr[2] = 2.0f;
+	pt = pt_arr;
+	hs = plane3d.Compute_Point_In(pt);	
+	printf("hs = %f",hs);
+	pt_arr[0] = 5.0f;
+	pt_arr[1] = -20.0f;
+	pt = pt_arr;
+	hs = plane3d.Compute_Point_In(pt);	
+	printf("hs = %f",hs);
+	
+	CParmline3D pline3d;
+	CPoint3D p0,p1;
+	p0.Zero();p1.Zero();
+	p1.SetY(2.0f);
+	
+	pline3d.SetP0(p0);pline3d.SetP1(p1);
+	
+	assert(pline3d.GetV().GetX() == pline3d.GetP1().GetX() - pline3d.GetP0().GetX());
+	assert(pline3d.GetV().GetY() == pline3d.GetP1().GetY() - pline3d.GetP0().GetY());
+	assert(pline3d.GetV().GetZ() == pline3d.GetP1().GetZ() - pline3d.GetP0().GetZ());
 
 
-
+	
 //	CPlane2D		plane2d;
-//	CPlane3D		plane3d;
 	
 
 }

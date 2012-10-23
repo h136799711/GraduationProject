@@ -395,7 +395,15 @@ public:
 		}
 		return result;
 	}
-
+	CVector<dimension> operator * (float k)
+	{
+		CVector<dimension> tmp;
+		for(int i=0;i<dimension;i++)
+		{
+			tmp.m_vector[i] = m_vector[i] * k;
+		}
+		return tmp;
+	}
 	float m_vector[dimension];
 	
 				

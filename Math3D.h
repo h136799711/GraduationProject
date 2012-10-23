@@ -74,11 +74,6 @@ public:
 	//14矩阵与4X4矩阵
 	int Mat_Mul_14_44(CMatrix14 v14,CMatrix44 m44,CMatrix14& rst);
 	/*
-	计算点是否在3D平面上，
-	返回hs
-	*/
-	float Compute_Point_In_Plane3D(CPoint3D pt,CPlane3D plane);
-	/*
 	A 系数矩阵
 	X 变量矩阵
 	B 常量矩阵
@@ -456,6 +451,8 @@ int CMath3D::Mat_Mul_3D_44(CVector3D v3d,CMatrix44 m44,CVector3D& rst)
 //3d向量与4X3矩阵
 int CMath3D::Mat_Mul_3D_43(CVector3D v3d,CMatrix43 m43,CVector3D& rst)
 {
+	//这个3D向量在计算时被 假设为等于一个4D向量
+	//这个4D向量的W分量为之外其他分量等于此3D向量
 	int col,row;
     for (col=0; col < 3; col++)
 	{

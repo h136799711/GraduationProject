@@ -18,18 +18,16 @@ public:
 		m_p1.Zero();
 		m_v.Zero();
 	}
-	CParmline(CVector<dimension> p0,CVector<dimension> p1,CVector<dimension> v)
+	CParmline(CVector<dimension> p0,CVector<dimension> p1)
 	{
 		m_p0 = p0;
 		m_p1 = p1;
-		m_v = v;
 	}
 	/*
 	根据t，计算直线上的点，存放至pt
 	*/
 	void Compute_Parm_Line(float t,CVector<dimension>& pt);
 	int Intersect_Parm_Lines(CParmline<dimension> right,CVector<dimension>& pt);
-	
 	/*
 	线段起点
 	*/
@@ -50,6 +48,7 @@ public:
 	*/
 	CVector<dimension> GetV()
 	{
+		CalculateV();
 		return m_v;
 	}
 	int SetP0(CVector<dimension> p0)
@@ -62,11 +61,7 @@ public:
 		m_p1 = p1;
 		return 1;
 	}
-	int SetV(CVector<dimension> v)
-	{
-		m_v = v;
-		return 1;
-	}
+
 	//根据p0，p1计算v方向向量
 	int CalculateV()
 	{
@@ -121,8 +116,10 @@ int CParmline<2>::Intersect_Parm_Lines(CParmline<2> right,CVector<2>& pt)
 	// 可以求得
 	float t1,t2;
 	
-	t1 = (right.GetV().GetX() * (GetP0().GetY() - right.GetP0().GetY())- right.GetV().GetY() *(GetP0().GetX() - right.GetP0().GetX()));
-	t2 = (GetV().GetX() * (GetP0().GetY() - right.GetP0().GetY())- GetV().GetY() *(GetP0().GetX() - right.GetP0().GetX()));
+	t1 = (right.GetV().GetX() * (GetP0().GetY() - right.GetP0().GetY())
+		- right.GetV().GetY() *(GetP0().GetX() - right.GetP0().GetX()))/det_p1p2;
+	t2 = (GetV().GetX() * (GetP0().GetY() - right.GetP0().GetY())
+		- GetV().GetY() *(GetP0().GetX() - right.GetP0().GetX()))/det_p1p2;
 	
 	pt.SetX(GetP0().GetX() + t1*GetV().GetX());
 	pt.SetY(GetP0().GetY() + t1*GetV().GetY());
