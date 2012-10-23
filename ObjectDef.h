@@ -25,7 +25,7 @@ public:
 	int m_attr;// 多边形的物理属性
 	int m_color;//多边形的颜色
 
-	CPoint4D m_vlist;//顶点列表
+	CPoint4D* m_vlist;//顶点列表
 	int m_vert[3];//顶点列表中元素的索引
 };
 
