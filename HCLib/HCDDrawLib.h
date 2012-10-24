@@ -85,13 +85,13 @@ public:
 	int Translate_Polygon2D(POLYGON2D_PTR poly, int dx, int dy);
 	int Rotate_Polygon2D(POLYGON2D_PTR poly, int theta);
 	int Scale_Polygon2D(POLYGON2D_PTR poly, float sx, float sy);
-	void Build_Sin_Cos_Tables(void);
+//	void Build_Sin_Cos_Tables(void);
 	int Translate_Polygon2D_Mat(POLYGON2D_PTR poly, int dx, int dy);
 	int Rotate_Polygon2D_Mat(POLYGON2D_PTR poly, int theta);
 	int Scale_Polygon2D_Mat(POLYGON2D_PTR poly, float sx, float sy);
 	int Draw_Polygon2D(POLYGON2D_PTR poly, UCHAR *vbuffer, int lpitch);
 	int Draw_Polygon2D16(POLYGON2D_PTR poly, UCHAR *vbuffer, int lpitch);
-
+	
 	
 	int min_clip_x,max_clip_x,min_clip_y,max_clip_y;
 };

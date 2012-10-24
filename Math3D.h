@@ -5,9 +5,11 @@
 #include "Vector.h"
 #include "Matrix.h"
 
-class CMath3D : HCMath
+class CMath3D :public HCMath
 {
+
 public:
+
 	//====================坐标系变换方法
 	/*
 	2D极坐标转换为2D点
@@ -82,61 +84,7 @@ public:
 	int Solve_3X3_System(CMatrix33 mA, CMatrix13& mX, CMatrix13 mB);
 	
 	
-	float Fast_Sin(float theta)
-	{
-		// this function uses the sin_look[] lookup table, but
-		// has logic to handle negative angles as well as fractional
-		// angles via interpolation, use this for a more robust
-		// sin computation that the blind lookup, but with with
-		// a slight hit in speed
-		
-		// convert angle to 0-359
-		theta = fmodf(theta,360);
-		
-		// make angle positive
-		if (theta < 0) theta+=360.0;
-		
-		// compute floor of theta and fractional part to interpolate
-		int theta_int    = (int)theta;
-		float theta_frac = theta - theta_int;
-		
-		// now compute the value of sin(angle) using the lookup tables
-		// and interpolating the fractional part, note that if theta_int
-		// is equal to 359 then theta_int+1=360, but this is fine since the
-		// table was made with the entries 0-360 inclusive
-		return(sin_look[theta_int] + 
-			theta_frac*(sin_look[theta_int+1] - sin_look[theta_int]));
-		
-	} // end Fast_Sin
-	
-	///////////////////////////////////////////////////////////////
-	
-	float Fast_Cos(float theta)
-	{
-		// this function uses the cos_look[] lookup table, but
-		// has logic to handle negative angles as well as fractional
-		// angles via interpolation, use this for a more robust
-		// cos computation that the blind lookup, but with with
-		// a slight hit in speed
-		
-		// convert angle to 0-359
-		theta = fmodf(theta,360);
-		
-		// make angle positive
-		if (theta < 0) theta+=360.0;
-		
-		// compute floor of theta and fractional part to interpolate
-		int theta_int    = (int)theta;
-		float theta_frac = theta - theta_int;
-		
-		// now compute the value of sin(angle) using the lookup tables
-		// and interpolating the fractional part, note that if theta_int
-		// is equal to 359 then theta_int+1=360, but this is fine since the
-		// table was made with the entries 0-360 inclusive
-		return(cos_look[theta_int] + 
-			theta_frac*(cos_look[theta_int+1] - cos_look[theta_int]));
-		
-	} // end Fast_Cos
+
 	
 	
 };

@@ -13,12 +13,13 @@
 #define Y 1
 #define Z 2
 #define W 3
+//4维下的Zero方法W分量为1不是0
 template<int dimension=2>class CVector
 {
 public:
 	
-/*	
-默认构造
+	/*	
+		默认构造
 	*/
 	CVector()
 	{
@@ -31,6 +32,8 @@ public:
 	{
 		memcpy(m_vector,pVec,sizeof(m_vector));
 	}
+	
+	inline int SetXYZW(float x,float y,float z=0,float w=1);
 	/*
 	得到X分量值
 	*/
@@ -151,10 +154,7 @@ public:
 	/*
 	置为0
 	*/
-	inline void Zero()
-	{
-		memset(m_vector,0,sizeof(m_vector));
-	}
+	inline void Zero();
 	/*
 	[]运算
 	以数组方式访问
@@ -344,7 +344,6 @@ public:
 	}
 	
 	/*
-	缩放，依赖于 *= 操作符
 	第二个参数存放结果
 	*/
 	int Scale(float k,CVector<dimension>& result)
@@ -405,12 +404,43 @@ public:
 		}
 		return tmp;
 	}
+
+
 	float m_vector[dimension];
 	
 				
 };//end of class CVector
 
+template<>
+inline int CVector<3>::SetXYZW(float x,float y,float z,float w)
+{
+	m_vector[X] = x;
+	m_vector[Y] = y;
+	m_vector[Z] = z;
+}
+template<>
+inline int CVector<4>::SetXYZW(float x,float y,float z,float w)
+{
+	m_vector[X] = x;
+	m_vector[Y] = y;
+	m_vector[Z] = z;
+	m_vector[W] = w;
+}
 
+
+template<int dimension>
+void CVector<dimension>::Zero()
+{
+	memset(m_vector,0,sizeof(m_vector));
+}
+template<>
+void CVector<4>::Zero()
+{
+	m_vector[X] = 0.0f;
+	m_vector[Y] = 0.0f;
+	m_vector[Z] = 0.0f;
+	m_vector[W] = 1.0f;
+}
 template<int dimension>
 int CVector<dimension>::GetString(char* desc)
 {

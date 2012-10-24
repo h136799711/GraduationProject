@@ -187,21 +187,27 @@ public:
 	}
 	inline CMatrix<row,col> operator * (CMatrix<row,col>& right)
 	{	
-		CMatrix<row,col> result;
-		for(int i=0;i<x;i++)
+		if(row != col )
 		{
-			for(int j=0;j<y;j++)
+			assert(0);
+			return NULL;
+		}
+		CMatrix<row,col> result;
+
+		for(int i=0;i<row;i++)
+		{
+			for(int j=0;j<row;j++)
 			{
 				float sum =0 ;
 
-				for(int k=0;k<c;k++)
+				for(int k=0;k<col;k++)
 				{
-					float tmp = (M[i*c+k] * right.M[k*y+j]);
+					float tmp = (M[i][k] * right.M[k][j]);
 					//printf("[%d][%d] %f * [%d][%d] %f = %f,",i+1,k+1,ma[i*x+k] ,k+1,j+1 ,mb[k*c+j],tmp);
 					sum += tmp;
 				}	
 				//printf(" result[%d][%d]= %f \n",i,j,sum);
-				result.M[i*x+j] = sum;
+				result.M[i][j] = sum;
 			}
 
 		}
