@@ -221,11 +221,15 @@ SOURCE=.\Vector.h
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=.\Draw3DV1.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\ObjectDef.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\Render3D.h
+SOURCE=.\RenderPipeline3DV1.h
 # End Source File
 # End Group
 # Begin Group "ModelLoader"

@@ -54,8 +54,8 @@ int HCDDrawLib::Rotate_Polygon2D_Mat(POLYGON2D_PTR poly, int theta)
 	MATRIX3X2 mr; // used to hold rotation transform matrix
 	HCMath hcmath;
 	// initialize the matrix with translation values dx dy
-	hcmath.Mat_Init_3X2(&mr,hcmath.cos_look[theta],hcmath.sin_look[theta], 
-		-hcmath.sin_look[theta],hcmath.cos_look[theta], 
+	hcmath.Mat_Init_3X2(&mr,cos_look[theta],sin_look[theta], 
+		-sin_look[theta],cos_look[theta], 
 		0, 0); 
 	
 	// loop and rotate each point, very crude, no lookup!!!
@@ -222,17 +222,17 @@ int HCDDrawLib::Rotate_Polygon2D(POLYGON2D_PTR poly, int theta)
 	// test for negative rotation angle
 	if (theta < 0)
 		theta+=360;
-	HCMath hcmath;
+
 	// loop and rotate each point, very crude, no lookup!!!
 	for (int curr_vert = 0; curr_vert < poly->num_verts; curr_vert++)
     {
 		
 		// perform rotation
-		float xr = (float)poly->vlist[curr_vert].x*hcmath.cos_look[theta] - 
-			(float)poly->vlist[curr_vert].y*hcmath.sin_look[theta];
+		float xr = (float)poly->vlist[curr_vert].x*cos_look[theta] - 
+			(float)poly->vlist[curr_vert].y*sin_look[theta];
 		
-		float yr = (float)poly->vlist[curr_vert].x*hcmath.sin_look[theta] + 
-			(float)poly->vlist[curr_vert].y*hcmath.cos_look[theta];
+		float yr = (float)poly->vlist[curr_vert].x*sin_look[theta] + 
+			(float)poly->vlist[curr_vert].y*cos_look[theta];
 		
 		// store result back
 		poly->vlist[curr_vert].x = xr;

@@ -1,5 +1,7 @@
+
 #include "..\PLGLoader.h"
-#include "..\Render3D.h"
+#include "..\RenderPipeline3DV1.h"
+#include "..\Draw3DV1.h"
 
 #include <stdio.h>
 #include <stdarg.h>
@@ -27,7 +29,7 @@ float cos_look[361];
 void TestRender3D()
 {
 
-	CRender3DV1 render;
+	CRenderPipeline3DV1 render;
 	CRenderList4DV1 rend_list;
 	CCamera4DV1 camera;
 	CMatrix44 mt;

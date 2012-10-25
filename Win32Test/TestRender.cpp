@@ -6,7 +6,10 @@
 #include "..\HCLib\HCInput.h"
 #include "..\HCReturnType.h"
 #include "..\ObjectDef.h"
-#include "..\Render3D.h"
+#include "..\PLGLoader.h"
+#include "..\RenderPipeline3DV1.h"
+#include "..\Draw3DV1.h"
+#include "..\Math3D.h"
 
 
 #ifdef SCREEN_BPP
@@ -26,6 +29,10 @@ HBDRESULT App_Shutdown(void *params = NULL,int num_params=0);
 HCDXBuilder hcdxBuilder;
 HCInput		hcInput;
 HCLog		hcLog;
+CMath3D		math3d;
+float sin_look[361];
+float cos_look[361];
+
 
 LRESULT CALLBACK WindowProc(HWND hwnd,UINT uMsg,WPARAM wparam,LPARAM lparam)
 {
@@ -62,6 +69,7 @@ int WINAPI WinMain(HINSTANCE hinstance , HINSTANCE hpreinstance,
 		hcLog.Write_Error("\n WinMain::hcdxBuilder Failed");
 		return 0;
 	}
+	math3d.Build_Sin_Cos_Tables(cos_look,sin_look);
 	MSG msg;
 	
 	while(TRUE)

@@ -5,6 +5,7 @@
 #include "Vector.h"
 #include "Matrix.h"
 
+
 class CMath3D :public HCMath
 {
 

@@ -9,10 +9,11 @@
 
 //int Fast_Distance_2D(int x, int y);
 //float Fast_Distance_3D(float x, float y, float z);
-#define X 0
-#define Y 1
-#define Z 2
-#define W 3
+
+#define HC_X 0
+#define HC_Y 1
+#define HC_Z 2
+#define HC_W 3
 //4维下的Zero方法W分量为1不是0
 template<int dimension=2>class CVector
 {
@@ -39,8 +40,8 @@ public:
 	*/
 	inline float GetX()
 	{
-		if(dimension > X) 
-			return m_vector[X];
+		if(dimension > HC_X) 
+			return m_vector[HC_X];
 		return 0;
 	}
 	/*
@@ -48,8 +49,8 @@ public:
 	*/
 	inline float GetY()
 	{		
-		if(dimension > Y) 
-			return m_vector[Y];
+		if(dimension > HC_Y) 
+			return m_vector[HC_Y];
 		return 0;
 	}
 	/*
@@ -57,8 +58,8 @@ public:
 	*/
 	inline float GetZ()
 	{
-		if(dimension > Z) 
-			return m_vector[Z];
+		if(dimension > HC_Z) 
+			return m_vector[HC_Z];
 		return 0;
 	}
 	/*
@@ -66,8 +67,8 @@ public:
 	*/
 	inline float GetW()
 	{
-		if(dimension > W) 
-			return m_vector[W];
+		if(dimension > HC_W) 
+			return m_vector[HC_W];
 		return 0;
 	}
 	/*
@@ -78,9 +79,9 @@ public:
 	inline int SetX(float x)
 	{
 		
-		if(X < dimension)
+		if(HC_X < dimension)
 		{
-			m_vector[X] = x;
+			m_vector[HC_X] = x;
 			return 1;
 		}
 		return 0;
@@ -93,24 +94,24 @@ public:
 	inline int SetY(float y)
 	{
 		
-		if(Y < dimension)
+		if(HC_Y < dimension)
 		{
-			m_vector[Y] = y;
+			m_vector[HC_Y] = y;
 			return 1;
 		}
 		return 0;
 	}
 	/*
-	设置Z分量值
+	设置HC_Z分量值
 	0 失败
 	1 成功
 	*/
 	inline int SetZ(float z)
 	{
 		
-		if(Z < dimension)
+		if(HC_Z < dimension)
 		{
-			m_vector[Z] = z;
+			m_vector[HC_Z] = z;
 			return 1;
 		}
 		return 0;
@@ -123,9 +124,9 @@ public:
 	inline int SetW(float w)
 	{
 		
-		if(W < dimension)
+		if(HC_W < dimension)
 		{
-			m_vector[W] = w;
+			m_vector[HC_W] = w;
 			return 1;
 		}
 		return 0;
@@ -324,12 +325,12 @@ public:
 	*/
 	int DivByW()
 	{
-		if(dimension != 4) return 0;
-		float w_inv = 1/ m_vector[W];
+		if(dimension != 4 || m_vector[HC_W] == 0) return 0;
+		float w_inv = 1/ m_vector[HC_W];
 		
-		m_vector[X] *= w_inv;
-		m_vector[Y] *= w_inv;
-		m_vector[Z] *= w_inv;
+		m_vector[HC_X] *= w_inv;
+		m_vector[HC_Y] *= w_inv;
+		m_vector[HC_Z] *= w_inv;
 		
 		
 		return 1;
@@ -414,17 +415,19 @@ public:
 template<>
 inline int CVector<3>::SetXYZW(float x,float y,float z,float w)
 {
-	m_vector[X] = x;
-	m_vector[Y] = y;
-	m_vector[Z] = z;
+	m_vector[HC_X] = x;
+	m_vector[HC_Y] = y;
+	m_vector[HC_Z] = z;
+	return 1;
 }
 template<>
 inline int CVector<4>::SetXYZW(float x,float y,float z,float w)
 {
-	m_vector[X] = x;
-	m_vector[Y] = y;
-	m_vector[Z] = z;
-	m_vector[W] = w;
+	m_vector[HC_X] = x;
+	m_vector[HC_Y] = y;
+	m_vector[HC_Z] = z;
+	m_vector[HC_W] = w;
+	return 1;
 }
 
 
@@ -436,10 +439,10 @@ void CVector<dimension>::Zero()
 template<>
 void CVector<4>::Zero()
 {
-	m_vector[X] = 0.0f;
-	m_vector[Y] = 0.0f;
-	m_vector[Z] = 0.0f;
-	m_vector[W] = 1.0f;
+	m_vector[HC_X] = 0.0f;
+	m_vector[HC_Y] = 0.0f;
+	m_vector[HC_Z] = 0.0f;
+	m_vector[HC_W] = 1.0f;
 }
 template<int dimension>
 int CVector<dimension>::GetString(char* desc)

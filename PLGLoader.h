@@ -125,20 +125,20 @@ public:
 				printf("PLG file error with file %s (vertex list invalid)\n",filename);
 				return 0;
 			}
-			sscanf(token_string,"%f %f %f",&obj.m_vlist_local[vertex].m_vector[X]
-				,&obj.m_vlist_local[vertex].m_vector[Y]
-				,&obj.m_vlist_local[vertex].m_vector[Z]);
+			sscanf(token_string,"%f %f %f",&obj.m_vlist_local[vertex].m_vector[HC_X]
+				,&obj.m_vlist_local[vertex].m_vector[HC_Y]
+				,&obj.m_vlist_local[vertex].m_vector[HC_Z]);
 			obj.m_vlist_local[vertex].SetW(1.0f);
 			//缩放顶点坐标
-			obj.m_vlist_local[vertex].m_vector[X] *= scale.GetX();
-			obj.m_vlist_local[vertex].m_vector[Y] *= scale.GetY();
-			obj.m_vlist_local[vertex].m_vector[Z] *= scale.GetZ();
+			obj.m_vlist_local[vertex].m_vector[HC_X] *= scale.GetX();
+			obj.m_vlist_local[vertex].m_vector[HC_Y] *= scale.GetY();
+			obj.m_vlist_local[vertex].m_vector[HC_Z] *= scale.GetZ();
 			
 			printf("\nVertex %d = %f %f %f %f",vertex
-				,obj.m_vlist_local[vertex].m_vector[X]
-				,obj.m_vlist_local[vertex].m_vector[Y]
-				,obj.m_vlist_local[vertex].m_vector[Z]
-				,obj.m_vlist_local[vertex].m_vector[W]);
+				,obj.m_vlist_local[vertex].m_vector[HC_X]
+				,obj.m_vlist_local[vertex].m_vector[HC_Y]
+				,obj.m_vlist_local[vertex].m_vector[HC_Z]
+				,obj.m_vlist_local[vertex].m_vector[HC_W]);
 		}
 		
 		//计算平均半径和最大半径
