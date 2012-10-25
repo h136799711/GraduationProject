@@ -1,5 +1,6 @@
 #ifndef H_HCLOG_INCLUDED
 #define H_HCLOG_INCLUDED
+#pragma once
 #include <stdio.h>
 #include <sys/timeb.h>
 #include <stdarg.h>
@@ -34,5 +35,6 @@ public:
 	*/
 	int Write_Error(char *string, ...);
 };
+
 
 #endif

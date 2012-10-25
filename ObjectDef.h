@@ -321,7 +321,7 @@ public:
 		m_u.Zero();
 		m_v.Zero();
 		m_n.Zero();
-		if(cam_target == NULL)
+		if(cam_target != NULL)
 			m_target = *cam_target;
 		else
 			m_target.Zero();
@@ -455,9 +455,7 @@ public:
 			mrot,//逆旋转矩阵的积
 			mtmp;//用于存储临时矩阵
 		
-		mt_inv.Identify();
-		
-		
+		mt_inv.Identify();		
 		mt_inv.M[3][0] = -m_pos.GetX();mt_inv.M[3][1] = -m_pos.GetY();mt_inv.M[3][2] = -m_pos.GetZ();
 		
 		float theta_x = m_dir.GetX();
@@ -466,18 +464,18 @@ public:
 		
 		//计算角度x的正弦和余弦
 		float cos_theta = CMath3D::Fast_Cos(theta_x);//cos(-x) = cos(x);
-		float sin_theta = CMath3D::Fast_Sin(theta_x);//sin(-x) = -sin(x);
+		float sin_theta = -CMath3D::Fast_Sin(theta_x);//sin(-x) = -sin(x);
 		
 		mx_inv.Identify();
 		mx_inv.M[1][1] = cos_theta;mx_inv.M[1][2]=sin_theta;
-		mx_inv.M[2][2] = cos_theta;mx_inv.M[2][1]=-sin_theta;
+		mx_inv.M[2][1]=-sin_theta;mx_inv.M[2][2] = cos_theta;
 		
 		cos_theta = CMath3D::Fast_Cos(theta_y);
 		sin_theta = -CMath3D::Fast_Sin(theta_y);
 		
 		my_inv.Identify();
 		my_inv.M[0][0] = cos_theta;
-		my_inv.M[2][0] = -sin_theta;
+		my_inv.M[0][2] = -sin_theta;
 		my_inv.M[2][0] = sin_theta;
 		my_inv.M[2][2] = cos_theta;
 		

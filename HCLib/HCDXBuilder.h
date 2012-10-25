@@ -7,6 +7,7 @@
 #include "HCMacros.h"
 #include "HCWindowBuilder.h"
 #include "HCUtility.h"
+#include "HCDDrawLib.h"
 
 
 #define DEFAULT_PALETTE_FILE "DEFAULT_PALDATA.PAL"
@@ -29,7 +30,6 @@ typedef struct BLINKER_TYP
 
 }BLINKER,*BLINKER_PTR;
 
-#include "HCDDrawLib.h"
 
 class HCDXBuilder:public HCWindowBuilder
 {

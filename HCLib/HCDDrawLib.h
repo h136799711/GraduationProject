@@ -1,12 +1,13 @@
 #ifndef H_HCDDRAWLIB_INCLUDED
 #define H_HCDDRAWLIB_INCLUDED
-
+#pragma once
 #pragma comment (lib,"ddraw.lib")
 #pragma warning (disable:4244)
 #include <ddraw.h>
 #include "HCMacros.h"
 #include "HCUtility.h"
 #include "HCMath.h"
+
 
 typedef struct VERTEX2DF_TYP
 {
@@ -30,10 +31,17 @@ public:
 	HCDDrawLib()
 	{
 		
-		min_clip_x = 0;
-		max_clip_x = 0;
-		min_clip_y = 0;
-		max_clip_y = 0;
+		min_clip_x = -1000;
+		max_clip_x = 1000;
+		min_clip_y = -1000;
+		max_clip_y = 1000;
+	}
+	void SetClipRect(int minx,int miny,int maxx,int maxy)
+	{		
+		min_clip_x = minx;
+		max_clip_x = maxx;
+		min_clip_y = miny;
+		max_clip_y = maxy;
 	}
 	// graphics functions
 	int Draw_Pixel(int x, int y,int color,UCHAR *video_buffer, int lpitch);
@@ -95,6 +103,5 @@ public:
 	
 	int min_clip_x,max_clip_x,min_clip_y,max_clip_y;
 };
-
 
 #endif

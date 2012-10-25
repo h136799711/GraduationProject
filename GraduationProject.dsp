@@ -177,10 +177,6 @@ SOURCE=.\HCLib\HCResource.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\HCReturnType.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\HCLib\HCSound.h
 # End Source File
 # Begin Source File

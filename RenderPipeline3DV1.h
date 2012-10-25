@@ -120,7 +120,7 @@ coord_select:如何变换坐标
 			for(int vertex=0;vertex<3;vertex++)
 			{
 				curr_poly->m_tvlist[vertex].SetX(alpha + alpha*curr_poly->m_tvlist[vertex].GetX());
-				curr_poly->m_tvlist[vertex].SetY(alpha + alpha*curr_poly->m_tvlist[vertex].GetY());
+				curr_poly->m_tvlist[vertex].SetY(beta - beta*curr_poly->m_tvlist[vertex].GetY());
 				
 			}
 		}
@@ -172,8 +172,8 @@ coord_select:如何变换坐标
 				curr_poly->m_tvlist[vertex].SetX(curr_poly->m_tvlist[vertex].GetX()*cam.m_view_dist / z);
 				curr_poly->m_tvlist[vertex].SetY(curr_poly->m_tvlist[vertex].GetY()*cam.m_view_dist / z);
 				
-				curr_poly->m_tvlist[vertex].SetX(curr_poly->m_tvlist[vertex].GetX() + alpha);
-				curr_poly->m_tvlist[vertex].SetY(curr_poly->m_tvlist[vertex].GetX() + beta);
+				curr_poly->m_tvlist[vertex].SetX(curr_poly->m_tvlist[vertex].GetX()*alpha + alpha);
+				curr_poly->m_tvlist[vertex].SetY(-curr_poly->m_tvlist[vertex].GetY()*beta + beta);
 			}
 		}
 		return 1;
@@ -355,13 +355,11 @@ coord_select:如何变换坐标
 		{
 		case 0: // no rotation
 			{
-				// what a waste!
 				return;
 			} break;
 			
 		case 1: // x rotation
 			{
-				// compute the sine and cosine of the angle
 				cos_theta = math3d.Fast_Cos(theta_x);
 				sin_theta = math3d.Fast_Sin(theta_x);
 				
@@ -372,15 +370,13 @@ coord_select:如何变换坐标
 
 
 
-				// that's it, copy to output matrix
-				mx =  mrot;
+				mrot = mx;
 				return;
 				
 			} break;
 			
 		case 2: // y rotation
 			{
-				// compute the sine and cosine of the angle
 				cos_theta = math3d.Fast_Cos(theta_y);
 				sin_theta = math3d.Fast_Sin(theta_y);
 				
@@ -391,8 +387,7 @@ coord_select:如何变换坐标
 
 
 				
-				// that's it, copy to output matrix
-				my = mrot;
+				mrot = my;
 				return;
 				
 			} break;
@@ -566,7 +561,7 @@ coord_select:如何变换坐标
 		{
 			for(int vertex=0;vertex<obj.m_polys;vertex++)
 			{
-				assert(obj.m_vlist_trans[vertex].DivByW() == 1);
+				obj.m_vlist_trans[vertex].DivByW();
 			}
 		}
 		/*
@@ -665,9 +660,9 @@ int CRenderPipeline3DV1::World_To_Camera_RenderList(CRenderList4DV1& rendlist,CC
 	{
 		CPolyF4DV1_PTR curr_poly = rendlist.m_poly_ptrs[poly];
 		if((curr_poly == NULL ) || 
-			(curr_poly->m_attr & POLY4DV1_STATE_ACTIVE)||
-			(curr_poly->m_attr & POLY4DV1_STATE_CLIPPED)||
-			(curr_poly->m_attr & POLY4DV1_STATE_BACKFACE))
+			!(curr_poly->m_state & POLY4DV1_STATE_ACTIVE)||
+			(curr_poly->m_state & POLY4DV1_STATE_CLIPPED)||
+			(curr_poly->m_state & POLY4DV1_STATE_BACKFACE))
 			continue;
 		
 		for(int vertex=0;vertex<3;vertex++)
@@ -702,13 +697,14 @@ int CRenderPipeline3DV1::Model_To_World_Renderlist(CRenderList4DV1& rend_list,CP
 		{
 			CPolyF4DV1_PTR curr_poly = rend_list.m_poly_ptrs[poly];
 			if((curr_poly == NULL ) || 
-				(curr_poly->m_attr & POLY4DV1_STATE_ACTIVE)||
-				(curr_poly->m_attr & POLY4DV1_STATE_CLIPPED)||
-				(curr_poly->m_attr & POLY4DV1_STATE_BACKFACE))
+				!(curr_poly->m_state & POLY4DV1_STATE_ACTIVE)||
+				(curr_poly->m_state & POLY4DV1_STATE_CLIPPED)||
+				(curr_poly->m_state & POLY4DV1_STATE_BACKFACE))
 				continue;
 			for(vertex = 0;vertex < 3;vertex++)
 			{
 				curr_poly->m_tvlist[vertex] = curr_poly->m_vlist[vertex] + world_pos;
+//				assert(curr_poly->m_tvlist[vertex].GetX() == curr_poly->m_vlist[vertex].GetX() + world_pos.GetX();
 			}
 		}
 	}else
@@ -718,13 +714,14 @@ int CRenderPipeline3DV1::Model_To_World_Renderlist(CRenderList4DV1& rend_list,CP
 			
 			CPolyF4DV1_PTR curr_poly = rend_list.m_poly_ptrs[poly];
 			if((curr_poly == NULL ) || 
-				(curr_poly->m_attr & POLY4DV1_STATE_ACTIVE)||
-				(curr_poly->m_attr & POLY4DV1_STATE_CLIPPED)||
-				(curr_poly->m_attr & POLY4DV1_STATE_BACKFACE))
+				!(curr_poly->m_state & POLY4DV1_STATE_ACTIVE)||
+				(curr_poly->m_state & POLY4DV1_STATE_CLIPPED)||
+				(curr_poly->m_state & POLY4DV1_STATE_BACKFACE))
 				continue;
 			for(vertex = 0;vertex < 3;vertex++)
 			{
 				curr_poly->m_tvlist[vertex] = curr_poly->m_tvlist[vertex] + world_pos;
+
 			}
 		}
 	}
@@ -811,17 +808,18 @@ int CRenderPipeline3DV1::Transform_Renderlist(CRenderList4DV1& rend_list,CMatrix
 			{
 				CPolyF4DV1_PTR curr_poly = rend_list.m_poly_ptrs[poly];
 				
-				if((curr_poly == NULL) || !(curr_poly->m_state & POLY4DV1_STATE_ACTIVE)
+				if( (curr_poly == NULL) || !(curr_poly->m_state & POLY4DV1_STATE_ACTIVE)
 					||(curr_poly->m_state & POLY4DV1_STATE_CLIPPED)||(curr_poly->m_state & POLY4DV1_STATE_BACKFACE))
+				{
+					
 					continue;
-				
+				}
 				for(vertex=0;vertex<3;vertex++)
 				{
 					CPoint4D presult;
 					math3d.Mat_Mul_4D_44(curr_poly->m_vlist[vertex],mt,presult);
 					
 					curr_poly->m_vlist[vertex] = presult;
-					assert(curr_poly->m_vlist[vertex] == presult);
 				}
 				
 			}

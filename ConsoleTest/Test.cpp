@@ -10,6 +10,7 @@
 #include "..\Geom.h"
 #include "..\Matrix.h"
 #include "..\Math3D.h"
+#include "..\ObjectDef.h"
 //#define NDEBUG
 
 #include <assert.h>
@@ -35,7 +36,6 @@ void TestMatrix();
 //≤‚ ‘Math3D
 void TestMath3D();	
 
-
 int main()
 {
 #ifndef TO_FILE_HBD
@@ -56,6 +56,9 @@ int main()
 	Print_NewLine("TestMatrix Successed!!");
 	TestMath3D();
 	Print_NewLine("TestMath3D Successed!!");
+	TestRender3D();
+	Print_NewLine("TestRender3D Successed!!");
+
 	Print_NewLine("BEGIN========================BEGIN");
 	Print_NewLine("");
 	Print_NewLine("END=========================END");
@@ -117,9 +120,9 @@ void TestMath3D()
 	math3d.Mat_Mul_14_44(m14a,m44,m14b);
 	CVector4D rst4dTmp;
 	math3d.Mat_Mul_XC_CY(1,4,4,&m14a.M[0][0],&m44.M[0][0],rst4dTmp.m_vector);	
-	assert(fabs(m14b.M[0][X] - rst4dTmp.GetX()) <= EPSILON_E5 );
-	assert(fabs(m14b.M[0][Y] - rst4dTmp.GetY()) <= EPSILON_E5 );
-	assert(fabs(m14b.M[0][Z] - rst4dTmp.GetZ()) <= EPSILON_E5 );
+	assert(fabs(m14b.M[0][HC_X] - rst4dTmp.GetX()) <= EPSILON_E5 );
+	assert(fabs(m14b.M[0][HC_Y] - rst4dTmp.GetY()) <= EPSILON_E5 );
+	assert(fabs(m14b.M[0][HC_Z] - rst4dTmp.GetZ()) <= EPSILON_E5 );
 
 	math3d.Mat_Mul_3D_33(v3d,m33,rst);
 	math3d.Mat_Mul_XC_CY(1,3,3,v3d.m_vector,&m33.M[0][0],rst2.m_vector);	
@@ -159,6 +162,10 @@ void TestMath3D()
 
 void TestMatrix()
 {
+	static CMatrix44 mrot;
+
+	assert(mrot.M[0][0] == 0.0f);
+
 	CMatrix33 matrix1,matrix2;
 	matrix1.M[1][1] = 2;
 	matrix2 = matrix1;

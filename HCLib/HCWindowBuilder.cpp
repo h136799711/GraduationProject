@@ -50,6 +50,8 @@ BOOLEAN HCWindowBuilder::CreateWndClassEx(LPCTSTR lpWindowName,int windowed,int 
 		return FALSE;
 	}
 
+	this->screen_width = nWidth;
+	this->screen_height = nHeight;
 	
 	if (windowed)
 	{
@@ -60,7 +62,6 @@ BOOLEAN HCWindowBuilder::CreateWndClassEx(LPCTSTR lpWindowName,int windowed,int 
 		//尽管它可能有边框和控件如果是窗口化程序的话
 		//如果不是窗口化就无关紧要
 		RECT window_rect = {0,0,nWidth-1,nHeight-1};
-		
 		// make the call to adjust window_rect
 		AdjustWindowRectEx(&window_rect,
 			GetWindowStyle(this->main_hwnd),

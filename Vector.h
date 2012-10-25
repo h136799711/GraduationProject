@@ -367,13 +367,16 @@ public:
 
 		return 1;	
 	}
+	/*
+		并非数学上的加法 在w分量只设为1
+	*/
 	CVector<dimension> operator +(CVector<dimension> &  right)
 	{	
 		CVector<dimension> result;
 		
 		for (int i=0; i<dimension; i++)
 			result.SetByIndex(i,m_vector[i] + right.m_vector[i]);
-		
+		result.SetW(1);
 		return result;
 	}
 	
