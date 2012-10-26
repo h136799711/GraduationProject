@@ -15,6 +15,7 @@
 #define HC_Z 2
 #define HC_W 3
 //4维下的Zero方法W分量为1不是0
+//4维下的操作对W分量不操作，注意4维下的操作
 template<int dimension=2>class CVector
 {
 public:
@@ -271,6 +272,7 @@ public:
 		case 2:
 			return (float)hcmath.Fast_Distance_2D(m_vector[0],m_vector[1]);
 		case 3:
+		case 4:
 			return (float)hcmath.Fast_Distance_3D(m_vector[0],m_vector[1],m_vector[2]);
 		default:
 			break;
@@ -359,16 +361,9 @@ public:
 		向量的叉积,
 		结果为垂直于叉积的2个向量
 	*/
-	int Cross(CVector<dimension> right,CVector<dimension>& result)
-	{
-		result.SetX((GetY()*right.GetZ() - GetZ()*right.GetY()));
-		result.SetY((GetX()*right.GetZ() - GetZ()*right.GetX()));
-		result.SetZ((GetX()*right.GetY() - GetY()*right.GetX()));
-
-		return 1;	
-	}
+	int Cross(CVector<dimension> right,CVector<dimension>& result);
 	/*
-		并非数学上的加法 在w分量只设为1
+		4维中并非数学上的加法 在w分量只设为1
 	*/
 	CVector<dimension> operator +(CVector<dimension> &  right)
 	{	
@@ -376,7 +371,7 @@ public:
 		
 		for (int i=0; i<dimension; i++)
 			result.SetByIndex(i,m_vector[i] + right.m_vector[i]);
-		result.SetW(1);
+
 		return result;
 	}
 	
@@ -415,6 +410,118 @@ public:
 				
 };//end of class CVector
 
+template<>
+CVector<4> CVector<4>::operator +(CVector<dimension> &  right)
+{
+		
+	CVector<dimension> result;
+		
+	result.SetByIndex(HC_X,m_vector[HC_X] + right.m_vector[HC_X]);
+	result.SetByIndex(HC_Y,m_vector[HC_Y] + right.m_vector[HC_Y]);
+	result.SetByIndex(HC_Z,m_vector[HC_Z] + right.m_vector[HC_Z]);
+	result.SetW(1.0f);
+	return result;
+}
+template<>
+CVector<4> CVector<4>::operator -(CVector<dimension> &  right)
+{
+		
+	CVector<dimension> result;
+		
+	result.SetByIndex(HC_X,m_vector[HC_X] - right.m_vector[HC_X]);
+	result.SetByIndex(HC_Y,m_vector[HC_Y] - right.m_vector[HC_Y]);
+	result.SetByIndex(HC_Z,m_vector[HC_Z] - right.m_vector[HC_Z]);
+	result.SetW(1.0f);
+	return result;
+}
+
+template<>
+float CVector<4>::CosTh(CVector<4>&vec)
+{
+	return (vec.Dot(*this)/vec.Length()*Length());
+}
+template<>
+int CVector<4>::Normalize()
+{
+
+	float length = sqrtf(m_vector[HC_X]*m_vector[HC_X] + m_vector[HC_Y]*m_vector[HC_Y] + m_vector[HC_Z]*m_vector[HC_Z]);
+
+	// test for zero length vector
+	// if found return zero vector
+	if (length < EPSILON_E5) 
+	   return 0;
+
+	float length_inv = 1.0/length;
+
+	// compute normalized version of vector
+	m_vector[HC_X] *= length_inv;
+	m_vector[HC_Y] *= length_inv;
+	m_vector[HC_Z] *= length_inv;
+	m_vector[HC_W] = 1;
+	
+	return 1;
+
+}
+template<>
+int CVector<3>::Cross(CVector<3> right,CVector<3>& result)
+{
+	result.SetX((GetY()*right.GetZ() - GetZ()*right.GetY()));
+	result.SetY((GetX()*right.GetZ() - GetZ()*right.GetX()));
+	result.SetZ((GetX()*right.GetY() - GetY()*right.GetX()));
+
+	return 1;	
+}
+template<>
+int CVector<4>::Cross(CVector<4> right,CVector<4>& result)
+{
+	result.SetX((GetY()*right.GetZ() - GetZ()*right.GetY()));
+	result.SetY(-(GetX()*right.GetZ() - GetZ()*right.GetX()));
+	result.SetZ((GetX()*right.GetY() - GetY()*right.GetX()));
+
+	return 1;	
+}
+
+
+
+template<>
+float CVector<4>::operator *(CVector<4> right)
+{
+	return m_vector[HC_X] * right.m_vector[HC_X] + m_vector[HC_Y] * right.m_vector[HC_Y] + m_vector[HC_Z] * right.m_vector[HC_Z];
+
+}
+template<>
+CVector<4> CVector<4>::operator *(float k)
+{
+	CVector<dimension> tmp;
+
+	tmp.m_vector[HC_X] = m_vector[HC_X] * k;
+	tmp.m_vector[HC_Y] = m_vector[HC_Y] * k;
+	tmp.m_vector[HC_Z] = m_vector[HC_Z] * k;
+
+	return tmp;
+
+}
+template<> 
+int CVector<4>::Scale(float k,CVector<4> &result)
+{
+	result.m_vector[HC_X] *= k;
+	result.m_vector[HC_Y] *= k;
+	result.m_vector[HC_Z] *= k;
+	result.m_vector[HC_W] =1;
+}
+template<> 
+int CVector<4>::Scale(float k)
+{
+	m_vector[HC_X] *= k;
+	m_vector[HC_Y] *= k;
+	m_vector[HC_Z] *= k;
+	m_vector[HC_W] =1;
+}
+template<>
+inline float CVector<4>::Dot(CVector<4>& vec)
+{
+	return 	m_vector[HC_X] * vec.m_vector[HC_X] + m_vector[HC_Y] * vec.m_vector[HC_Y] + m_vector[HC_Z] * vec.m_vector[HC_Z];
+}
 template<>
 inline int CVector<3>::SetXYZW(float x,float y,float z,float w)
 {

@@ -211,13 +211,14 @@ coord_select:如何变换坐标
 			
 			//计算u，v
 			u = obj.m_vlist_trans[vindex_1] - obj.m_vlist_trans[vindex_0];
+			u.SetW(1.0f);
 			v = obj.m_vlist_trans[vindex_2] - obj.m_vlist_trans[vindex_0];
-			
+			v.SetW(1.0f);
 			u.Cross(v,n);
 			
 			CVector4D view;
 			view = cam.m_pos - obj.m_vlist_trans[vindex_0];
-			
+			view.SetW(1.0f);
 			float dp = n.Dot(view);
 			if(dp <= 0.0)
 				SET_BIT(curr_poly->m_state,POLY4DV1_STATE_BACKFACE);
@@ -242,12 +243,15 @@ coord_select:如何变换坐标
 			CVector4D u,v,n;
 			
 			u = curr_poly->m_tvlist[1] - curr_poly->m_tvlist[0];
+			u.SetW(1.0f);
 			v = curr_poly->m_tvlist[2] - curr_poly->m_tvlist[0];
+			v.SetW(1.0f);
 			
 			u.Cross(v,n);
 			
 			CVector4D view;
 			view = cam.m_pos - curr_poly->m_tvlist[0];
+			view.SetW(1.0f);
 			float dp = u.Dot(view);
 			if(dp <= 0.0)
 			{
@@ -601,7 +605,7 @@ void Rotate_XYZ_Object(CObject4DV1 obj,
 	
 	for(int vertex = 0 ;vertex < obj.m_vertices;vertex++)
 	{
-		CPoint presult;
+		CPoint4D presult;
 
 		math3d.Mat_Mul_4D_44(obj.m_vlist_local[vertex],mrot,presult);
 

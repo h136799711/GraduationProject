@@ -35,6 +35,7 @@
 int App_Init(void *params = NULL,int num_params=0);
 int App_Main(void *params = NULL,int num_params=0);
 int App_Shutdown(void *params = NULL,int num_params=0);
+int Input_Process();
 
 //variable 
 HCDXBuilder hcdxBuilder;
@@ -60,10 +61,24 @@ CPoint4D cam_pos;
 CVector4D cam_dir;
 CVector4D vscale,vpos,vrot;//
 CPolyF4DV1  poly;
+CPolyF4DV1 cam_poly;
+CObject4DV1 cam_obj;
 CPoint4D poly_pos;
 
+//用于立方体
 CPlgLoader plgloader;
+CObject4DV1 sphere;
+float ang_y = 0;
 
+void DrawRect(int x0,int y0,int x1,int y1,int color,UCHAR* video_buffer,int lpitch)
+{
+
+	draw3d.Draw_Line16(x0,y0,x1,y0,color,video_buffer,lpitch);
+	draw3d.Draw_Line16(x1,y0,x1,y1,color,video_buffer,lpitch);
+	draw3d.Draw_Line16(x1,y1,x0,y1,color,video_buffer,lpitch);
+	draw3d.Draw_Line16(x0,y1,x0,y0,color,video_buffer,lpitch);
+
+}
 ///////////////////////////////////////////////////////////////////////////
 LRESULT CALLBACK WindowProc(HWND hwnd,UINT uMsg,WPARAM wparam,LPARAM lparam)
 {
@@ -100,7 +115,6 @@ int WINAPI WinMain(HINSTANCE hinstance , HINSTANCE hpreinstance,
 		hcLog.Write_Error("\n WinMain::hcdxBuilder Failed");
 		return 0;
 	}
-	math3d.Build_Sin_Cos_Tables(cos_look,sin_look);
 	MSG msg;
 	
 	while(TRUE)
@@ -125,6 +139,7 @@ int WINAPI WinMain(HINSTANCE hinstance , HINSTANCE hpreinstance,
 char buffer[120];
 int App_Init(void *params ,int num_params)
 {
+	math3d.Build_Sin_Cos_Tables(cos_look,sin_look);
 	if(FAILED(hcdxBuilder.DDraw_Init(WINDOW_WIDTH,WINDOW_HEIGHT,SCREEN_BPP16,SCREEN_WINDOWED)))
 	{
 		hcLog.Write_Error("\n App_Init FAILED!");
@@ -144,12 +159,12 @@ int App_Init(void *params ,int num_params)
 	RECT screen_rect =
 	{0,0,hcdxBuilder.screen_width - 1,hcdxBuilder.screen_height-1};
 	hcdxBuilder.lpddclipper = hcdxBuilder.DDraw_Attach_Clipper(hcdxBuilder.lpddsback,1,&screen_rect);
-	draw3d.SetClipRect(0,0,250,250);
+	draw3d.SetClipRect(60,60,350,350);
 	
 	
 	cam_pos.SetXYZW(0,0,-100,1);
 	cam_dir.SetXYZW(0,0,0,1);
-	vscale.SetXYZW(0.5,0.5,0.5,1);
+	vscale.SetXYZW(10,10,5,1);
 	vpos.SetXYZW(0,0,0,1);
 	vrot.SetXYZW(0,0,0,1);
 	
@@ -157,6 +172,27 @@ int App_Init(void *params ,int num_params)
 	
 	math3d.Build_Sin_Cos_Tables(cos_look,sin_look);
 	
+	cam_poly.m_state= POLY4DV1_STATE_ACTIVE;
+	cam_poly.m_attr   =  0; 
+	cam_poly.m_color= hcdxBuilder.RGB16Bit(0,255,0);
+	cam_poly.m_vlist[0].SetX(0);
+	cam_poly.m_vlist[0].SetY(25);
+	cam_poly.m_vlist[0].SetZ(0);
+	cam_poly.m_vlist[0].SetW(1);
+	
+	
+	cam_poly.m_vlist[1].SetX(25);
+	cam_poly.m_vlist[1].SetY(-25);
+	cam_poly.m_vlist[1].SetZ(0);
+	cam_poly.m_vlist[1].SetW(1);
+	
+	cam_poly.m_vlist[2].SetX(-25);
+	cam_poly.m_vlist[2].SetY(-25);
+	cam_poly.m_vlist[2].SetZ(0);
+	cam_poly.m_vlist[2].SetW(1);
+	cam_poly.m_next = cam_poly.m_prev = NULL;
+
+
 	poly.m_state= POLY4DV1_STATE_ACTIVE;
 	poly.m_attr   =  0; 
 	poly.m_color= hcdxBuilder.RGB16Bit(0,255,0);
@@ -175,6 +211,7 @@ int App_Init(void *params ,int num_params)
 	poly.m_vlist[2].SetY(-50);
 	poly.m_vlist[2].SetZ(0);
 	poly.m_vlist[2].SetW(1);
+	poly.m_next = poly.m_prev = NULL;
 	
 	
 	CPoint4D origin;
@@ -183,13 +220,14 @@ int App_Init(void *params ,int num_params)
 		cam_pos,cam_dir,
 		NULL,50.0,500.0,90.0,WINDOW_WIDTH,WINDOW_HEIGHT);
 	
-	poly.m_next = poly.m_prev = NULL;
 	
+	plgloader.Load_Object4DV1_PLG(sphere,"asset\\cube1.plg",vscale,vpos,vrot,hcdxBuilder.dd_pixel_format);
+	sphere.m_world_pos.SetZ(100);
 	return 1;
 }
 int App_Main(void *params ,int num_params)
 {
-	static bool bPause = false;
+
 	//	memset(buffer,0,sizeof(buffer));
 	
 	if(bClosed)
@@ -198,7 +236,7 @@ int App_Main(void *params ,int num_params)
 	}
 	
 	static CMatrix44 mrot;//旋转
-	static float ang_y=0;//旋转角度
+
 	
 	int index;//loop variable
 	
@@ -213,11 +251,13 @@ int App_Main(void *params ,int num_params)
 		return 0;
 	}
 	
-	Input_Process();
 	
+	
+	Input_Process();
 	rendList.Reset_RenderListV1();
 	rendList.Insert_PolyF4DV1(poly);
-	
+	rendList.Insert_PolyF4DV1(cam_poly);
+	rendList.Insert_Object(sphere,1);
 	//	 sprintf(buffer,"rendlist state: polys = %d,state = %d",rendList.m_polys,rendList.m_state);
 	//	 sprintf(buffer,"rendlist poly1:color = %d,顶点0 = %f %f %f ",rendList.m_poly_data[0].m_color,rendList.m_poly_data[0].m_vlist[0].GetX(),rendList.m_poly_data[0].m_vlist[0].GetY(),rendList.m_poly_data[0].m_vlist[0].GetZ());
 	// 	 sprintf(buffer,"rendlist poly1:color = %d,顶点1 = %f %f %f ",rendList.m_poly_data[0].m_color,rendList.m_poly_data[0].m_vlist[1].GetX(),rendList.m_poly_data[0].m_vlist[1].GetY(),rendList.m_poly_data[0].m_vlist[1].GetZ());
@@ -225,7 +265,6 @@ int App_Main(void *params ,int num_params)
 	//	 sprintf(buffer,"rendlist poly1:color = %d,顶点0 = %f %f %f ",rendList.m_poly_ptrs[0]->m_color,rendList.m_poly_ptrs[0]->m_vlist[0].GetX(),rendList.m_poly_ptrs[0]->m_vlist[0].GetY(),rendList.m_poly_ptrs[0]->m_vlist[0].GetZ());
 	
 	
-	rpl3d.Build_XYZ_Rotation_Matrix44(0,ang_y,0,mrot);
 	//	sprintf(buffer,"mrot : 0行 = %f %f %f %f \n 1行 = %f %f %f %f",mrot.M[0][0],mrot.M[0][1],mrot.M[0][2],mrot.M[0][3]
 	//	,mrot.M[1][0],mrot.M[1][1],mrot.M[1][2],mrot.M[1][3]);
 	//	sprintf(buffer,"mrot : 2行 = %f %f %f %f \n 3行 = %f %f %f %f",mrot.M[2][0],mrot.M[2][1],mrot.M[2][2],mrot.M[2][3]
@@ -242,13 +281,14 @@ int App_Main(void *params ,int num_params)
 	//	sprintf(buffer,"= %f %f %f ",rst.GetX(),rst.GetY(),rst.GetZ());
 	
 	
+	rpl3d.Build_XYZ_Rotation_Matrix44(0,ang_y,0,mrot);
 	rpl3d.Transform_Renderlist(rendList,mrot,TRANSFORM_LOCAL_ONLY);
 	//	sprintf(buffer,"第一个顶点 :  = %f %f %f ",rendList.m_poly_ptrs[0]->m_vlist[0].GetX(),rendList.m_poly_ptrs[0]->m_vlist[0].GetY(),rendList.m_poly_ptrs[0]->m_vlist[0].GetZ());
 	
 //	CMatrix44 mt;
 	
-	//	rpl3d.Build_Model_To_Word_Matrix44(poly_pos,mt);		
-	//	rpl3d.Transform_Renderlist(rendList,mt,TRANSFORM_LOCAL_TO_TRANS);
+//	rpl3d.Build_Model_To_Word_Matrix44(poly_pos,mt);		
+//	rpl3d.Transform_Renderlist(rendList,mt,TRANSFORM_LOCAL_TO_TRANS);
 	
 	rpl3d.Model_To_World_Renderlist(rendList,poly_pos);	 
 	//	sprintf(buffer,"poly_pos:  = %f %f %f %f",poly_pos.GetX(),poly_pos.GetY(),poly_pos.GetZ(),poly_pos.GetW());	
@@ -284,15 +324,17 @@ int App_Main(void *params ,int num_params)
 	//	sprintf(buffer,"顶点 :  = %f %f %f ",rendList.m_poly_ptrs[0]->m_tvlist[1].GetX(),rendList.m_poly_ptrs[0]->m_tvlist[1].GetY(),rendList.m_poly_ptrs[0]->m_tvlist[1].GetZ());
 	//	sprintf(buffer,"第2个顶点 :  = %f %f %f ",rendList.m_poly_ptrs[0]->m_tvlist[1].GetX(),rendList.m_poly_ptrs[0]->m_tvlist[1].GetY(),rendList.m_poly_ptrs[0]->m_tvlist[1].GetZ());
 	
-	//	rpl3d.Camera_To_Perspective_Renderlist(rendList,cam);
-	//	rpl3d.Perspective_To_Screen_Rendlist(rendList,cam);
+	rpl3d.Camera_To_Perspective_Renderlist(rendList,cam);
+	rpl3d.Perspective_To_Screen_Rendlist(rendList,cam);
 		
 	
 //	sprintf(buffer,":  = %f %f ",cam.m_viewport_width,cam.m_viewport_height);
 	//相机直接到屏幕坐标的变换
-	cam.m_viewplane_height =  cam.m_viewport_height;
-	cam.m_viewplane_width =  cam.m_viewport_width;
-	rpl3d.Camera_To_Perspective_Screen_Renderlist(rendList,cam);
+	
+//	cam.m_viewplane_height =  cam.m_viewport_height;
+//	cam.m_viewplane_width =  cam.m_viewport_width;
+//	cam.m_view_dist = 0.5 * cam.m_viewplane_width*tan(cam.m_fov/2);
+//	rpl3d.Camera_To_Perspective_Screen_Renderlist(rendList,cam);
 	//	sprintf(buffer,"第2个顶点 :  = %f %f %f ",rendList.m_poly_ptrs[0]->m_tvlist[1].GetX(),rendList.m_poly_ptrs[0]->m_tvlist[1].GetY(),rendList.m_poly_ptrs[0]->m_tvlist[1].GetZ());
 	
 	//绘制
@@ -300,17 +342,15 @@ int App_Main(void *params ,int num_params)
 	
 	draw3d.Draw_Text_GDI(buffer,10,30,hcdxBuilder.RGB16Bit(0,255,255),hcdxBuilder.lpddsback);
 	
-	draw3d.Draw_Line16(2,2,250,2,hcdxBuilder.RGB16Bit(155,155,155),hcdxBuilder.Get_Back_Buffer(),hcdxBuilder.Get_Back_lPitch());
-	draw3d.Draw_Line16(250,2,250,250,hcdxBuilder.RGB16Bit(155,155,155),hcdxBuilder.Get_Back_Buffer(),hcdxBuilder.Get_Back_lPitch());
-	draw3d.Draw_Line16(250,250,2,250,hcdxBuilder.RGB16Bit(155,155,155),hcdxBuilder.Get_Back_Buffer(),hcdxBuilder.Get_Back_lPitch());
-	draw3d.Draw_Line16(2,250,2,2,hcdxBuilder.RGB16Bit(155,155,155),hcdxBuilder.Get_Back_Buffer(),hcdxBuilder.Get_Back_lPitch());
-	
 	draw3d.Draw_RenderList4DV1_Wire16(rendList,hcdxBuilder.Get_Back_Buffer(),hcdxBuilder.Get_Back_lPitch());
-	
-
-	
+	draw3d.Draw_Object_Wire16(cam_obj,hcdxBuilder.Get_Back_Buffer(),hcdxBuilder.Get_Back_lPitch());
 	
 	draw3d.Draw_Text_GDI("矩形用于2D裁剪 单个三角形",10,10,hcdxBuilder.RGB16Bit(0,255,255),hcdxBuilder.lpddsback);
+	draw3d.Draw_Text_GDI("ESC 退出,左右键，旋转三角形，WASD键平移三角形",10,60,hcdxBuilder.RGB16Bit(0,255,255),hcdxBuilder.lpddsback);
+	DrawRect(60,60,380,380,hcdxBuilder.RGB16Bit(0,255,255),hcdxBuilder.Get_Back_Buffer(),hcdxBuilder.Get_Back_lPitch());
+	
+	int x0 = rendList.m_poly_ptrs[1]->m_tvlist[0].GetX(),y0 = rendList.m_poly_ptrs[1]->m_tvlist[0].GetY();
+	DrawRect(x0,y0,x0+5,y0+5,hcdxBuilder.RGB16Bit(150,150,150),hcdxBuilder.Get_Back_Buffer(),hcdxBuilder.Get_Back_lPitch());
 	
 
 	hcdxBuilder.DDraw_Unlock_Back_Surface();
@@ -334,7 +374,8 @@ int App_Shutdown(void *params,int num_params)
 
 int Input_Process()
 {
-
+	static CMatrix44 mt;
+	mt.Identify();
 	if(KEY_DOWN(VK_ESCAPE) || hcInput.keyboard_state[DIK_ESCAPE])
 	{
 		PostMessage(hcdxBuilder.main_hwnd,WM_DESTROY,0,0);
@@ -343,7 +384,28 @@ int Input_Process()
 	}
 	if(KEY_DOWN(VK_RIGHT) || hcInput.keyboard_state[DIK_RIGHT])
 	{
-
+		ang_y++;
+	}
+	if(KEY_DOWN(VK_LEFT) || hcInput.keyboard_state[DIK_LEFT])
+	{
+		ang_y--;		
+	}
+	
+	if(KEY_DOWN('A') || hcInput.keyboard_state[DIK_A])
+	{
+		poly_pos.SetX(poly_pos.GetX() - 3.0f);
+	}
+	if(KEY_DOWN('D') || hcInput.keyboard_state[DIK_D])
+	{
+		poly_pos.SetX(poly_pos.GetX() + 3.0f);
+	}
+	if(KEY_DOWN('W') || hcInput.keyboard_state[DIK_W])
+	{
+		poly_pos.SetY(poly_pos.GetY() + 3.0f);
+	}
+	if(KEY_DOWN('S') || hcInput.keyboard_state[DIK_S])
+	{
+		poly_pos.SetY(poly_pos.GetY() - 3.0f);
 	}
 	return 1;
 }

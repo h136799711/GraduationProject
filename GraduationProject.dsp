@@ -134,7 +134,7 @@ SOURCE=.\HCLib\HCWindowBuilder.cpp
 # End Group
 # Begin Source File
 
-SOURCE=.\main.cpp
+SOURCE=.\main2.cpp
 # End Source File
 # End Group
 # Begin Group "Header Files"

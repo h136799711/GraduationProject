@@ -102,13 +102,13 @@ public:
 	/*
 		重置物体的状态标记
 	*/
-	void Reset_Object(CObject4DV1& obj)
+	void Reset_Object()
 	{
-		RESET_BIT(obj.m_state,OBJECT4DV1_STATE_CULLED);
+		RESET_BIT(m_state,OBJECT4DV1_STATE_CULLED);
 
-		for(int poly=0;poly<obj.m_polys;poly++)
+		for(int poly=0;poly<m_polys;poly++)
 		{
-			CPoly4DV1* curr_poly = &obj.m_plist[poly];
+			CPoly4DV1* curr_poly = &m_plist[poly];
 
 			if(!(curr_poly->m_state & POLY4DV1_STATE_ACTIVE))
 				continue;
