@@ -43,6 +43,7 @@ HCLog		hcLog;
 CMath3D		math3d;
 float sin_look[361];
 float cos_look[361];
+bool bClosed = false;
 
 /*********************************************************************
 //测试数据
@@ -61,6 +62,7 @@ CVector4D vscale,vpos,vrot;//
 CPolyF4DV1  poly;
 CPoint4D poly_pos;
 
+CPlgLoader plgloader;
 
 ///////////////////////////////////////////////////////////////////////////
 LRESULT CALLBACK WindowProc(HWND hwnd,UINT uMsg,WPARAM wparam,LPARAM lparam)
@@ -187,7 +189,6 @@ int App_Init(void *params ,int num_params)
 }
 int App_Main(void *params ,int num_params)
 {
-	static bool bClosed = false;
 	static bool bPause = false;
 	//	memset(buffer,0,sizeof(buffer));
 	
@@ -212,13 +213,7 @@ int App_Main(void *params ,int num_params)
 		return 0;
 	}
 	
-	
-	if(KEY_DOWN(VK_ESCAPE) || hcInput.keyboard_state[DIK_ESCAPE])
-	{
-		PostMessage(hcdxBuilder.main_hwnd,WM_DESTROY,0,0);
-		hcLog.Write_Error("\n App_Main::PostMessage WM_DESTROY!");
-		bClosed = true;
-	}
+	Input_Process();
 	
 	rendList.Reset_RenderListV1();
 	rendList.Insert_PolyF4DV1(poly);
@@ -236,7 +231,7 @@ int App_Main(void *params ,int num_params)
 	//	sprintf(buffer,"mrot : 2行 = %f %f %f %f \n 3行 = %f %f %f %f",mrot.M[2][0],mrot.M[2][1],mrot.M[2][2],mrot.M[2][3]
 	//		,mrot.M[3][0],mrot.M[3][1],mrot.M[3][2],mrot.M[3][3]);
 	
-	 if(++ang_y >= 360.0) ang_y = 0;
+
 	
 	//	sprintf(buffer,"第一个顶点 :  = %f %f %f  \n",rendList.m_poly_ptrs[0]->m_vlist[0].GetX(),rendList.m_poly_ptrs[0]->m_vlist[0].GetY(),rendList.m_poly_ptrs[0]->m_vlist[0].GetZ());
 	
@@ -277,11 +272,11 @@ int App_Main(void *params ,int num_params)
 	
 	//	sprintf(buffer,"第一个顶点 :  = %f %f %f ",rendList.m_poly_ptrs[0]->m_tvlist[1].GetX(),rendList.m_poly_ptrs[0]->m_tvlist[1].GetY(),rendList.m_poly_ptrs[0]->m_tvlist[1].GetZ());
 	
-	
+	//根据欧拉模式下相机的3个旋转角度初始化相机的变换矩阵(旋转矩阵和平移矩阵合并)
 	cam.Build_Cam4DV1_Matrix_Euler(CAM_ROT_SEQ_ZYX);
 	
 //	sprintf(buffer,"第1个顶点 :  = %f %f %f ",rendList.m_poly_ptrs[0]->m_tvlist[1].GetX(),rendList.m_poly_ptrs[0]->m_tvlist[1].GetY(),rendList.m_poly_ptrs[0]->m_tvlist[1].GetZ());
-	
+	//世界坐标到相机坐标变换
 	rpl3d.World_To_Camera_RenderList(rendList,cam);
 //	sprintf(&buffer[40],"第2个顶点 :  = %f %f %f ",rendList.m_poly_ptrs[0]->m_tvlist[1].GetX(),rendList.m_poly_ptrs[0]->m_tvlist[1].GetY(),rendList.m_poly_ptrs[0]->m_tvlist[1].GetZ());
 	
@@ -294,9 +289,13 @@ int App_Main(void *params ,int num_params)
 		
 	
 //	sprintf(buffer,":  = %f %f ",cam.m_viewport_width,cam.m_viewport_height);
+	//相机直接到屏幕坐标的变换
+	cam.m_viewplane_height =  cam.m_viewport_height;
+	cam.m_viewplane_width =  cam.m_viewport_width;
 	rpl3d.Camera_To_Perspective_Screen_Renderlist(rendList,cam);
 	//	sprintf(buffer,"第2个顶点 :  = %f %f %f ",rendList.m_poly_ptrs[0]->m_tvlist[1].GetX(),rendList.m_poly_ptrs[0]->m_tvlist[1].GetY(),rendList.m_poly_ptrs[0]->m_tvlist[1].GetZ());
 	
+	//绘制
 	hcdxBuilder.DDraw_Lock_Back_Surface();
 	
 	draw3d.Draw_Text_GDI(buffer,10,30,hcdxBuilder.RGB16Bit(0,255,255),hcdxBuilder.lpddsback);
@@ -320,7 +319,7 @@ int App_Main(void *params ,int num_params)
 	
 	Wait_Clock(30);
 	
-
+	
 	
 	
 	return 1;
@@ -330,5 +329,21 @@ int App_Shutdown(void *params,int num_params)
 	hcdxBuilder.DDraw_Shutdown();
 	hcInput.DInput_Release_Keyboard();
 	hcInput.DInput_Shutdown();
+	return 1;
+}
+
+int Input_Process()
+{
+
+	if(KEY_DOWN(VK_ESCAPE) || hcInput.keyboard_state[DIK_ESCAPE])
+	{
+		PostMessage(hcdxBuilder.main_hwnd,WM_DESTROY,0,0);
+		hcLog.Write_Error("\n App_Main::PostMessage WM_DESTROY!");
+		bClosed = true;
+	}
+	if(KEY_DOWN(VK_RIGHT) || hcInput.keyboard_state[DIK_RIGHT])
+	{
+
+	}
 	return 1;
 }

@@ -172,14 +172,14 @@ coord_select:如何变换坐标
 				curr_poly->m_tvlist[vertex].SetX(curr_poly->m_tvlist[vertex].GetX()*cam.m_view_dist / z);
 				curr_poly->m_tvlist[vertex].SetY(curr_poly->m_tvlist[vertex].GetY()*cam.m_view_dist / z);
 				
-				curr_poly->m_tvlist[vertex].SetX(curr_poly->m_tvlist[vertex].GetX()*alpha + alpha);
-				curr_poly->m_tvlist[vertex].SetY(-curr_poly->m_tvlist[vertex].GetY()*beta + beta);
+				curr_poly->m_tvlist[vertex].SetX(curr_poly->m_tvlist[vertex].GetX() + alpha);
+				curr_poly->m_tvlist[vertex].SetY(-curr_poly->m_tvlist[vertex].GetY() + beta);
 			}
 		}
 		return 1;
 	}
 	/*
-	执行剔除物体操作，物体被一球包围着用作物体的体积
+	执行剔除物体操作，以一包围球用作物体的体积
 	*/
 	int Cull_Object(CObject4DV1& obj,CCamera4DV1 cam,int cull_flags);
 	/*
@@ -226,6 +226,8 @@ coord_select:如何变换坐标
 	}
 	/*
 	渲染列表级别的背面剔除
+	此时渲染列表中多边形的坐标应该是相机坐标了。
+	原理: 根据多边形的法线与相机到多边形的方向向量的点乘，判断是否可见
 	*/
 	void Remove_Backfaces_Renderlist(CRenderList4DV1& rend_list,CCamera4DV1 cam)
 	{
@@ -293,14 +295,14 @@ coord_select:如何变换坐标
 		
 		m44.M[1][0] = 0;m44.M[1][1] = -beta;m44.M[1][2] = 0;m44.M[1][3] = 0;
 		
-		m44.M[2][0] = alpha;m44.M[2][1] = beta;m44.M[2][2] = 1;m44.M[2][3] = 1;
+		m44.M[2][0] = alpha;m44.M[2][1] = beta;m44.M[2][2] = 1;m44.M[2][3] = 0;
 		
-		m44.M[3][0] = 0;m44.M[3][1] = 0;m44.M[3][2] = 0;m44.M[3][3] = 0;
+		m44.M[3][0] = 0;m44.M[3][1] = 0;m44.M[3][2] = 0;m44.M[3][3] = 1;
 		
 	}
 	/*
 	建立透视坐标到屏幕坐标的变换矩阵
-	这个方法假定透视坐标已经是3D坐标
+	这个方法假定透视坐标已经是3D坐标，并且相机参数中的视平面是归一化即2X2格式
 	*/
 	void Build_Perspective_To_Screen_Matrix44(CCamera4DV1 cam,CMatrix44& m44)
 	{
@@ -311,36 +313,48 @@ coord_select:如何变换坐标
 		
 		m44.M[1][0] = 0;m44.M[1][1] = -beta;m44.M[1][2] = 0;m44.M[1][3] = 0;
 		
+		m44.M[2][0] = alpha;m44.M[2][1] = beta;m44.M[2][2] = 1;m44.M[2][3] = 0;
+		
+		m44.M[3][0] = 0;m44.M[3][1] = 0;m44.M[3][2] = 0;m44.M[3][3] = 1;
+		
+	}
+	/*///////////////////
+		建立相机坐标直接到屏幕坐标的变换矩阵
+		1.相机中的参数视平面大小必须与视口大小一致
+		2.经过此矩阵变换之后的坐标是4D齐次的，所以之后必须转换为3D坐标即除以W分量
+		3.
+	*/////////////
+	void Build_Camera_To_Screen_Matrix44(CCamera4DV1 cam,CMatrix44& m44)
+	{
+		float alpha = 0.5*cam.m_viewport_width - 0.5;
+		float beta  = 0.5*cam.m_viewport_height - 0.5;
+		
+		m44.M[0][0] = cam.m_view_dist;m44.M[0][1] = 0;m44.M[0][2] = 0;m44.M[0][3] = 0;
+		
+		m44.M[1][0] = 0;m44.M[1][1] = -cam.m_view_dist;m44.M[1][2] = 0;m44.M[1][3] = 0;
+		
 		m44.M[2][0] = alpha;m44.M[2][1] = beta;m44.M[2][2] = 1;m44.M[2][3] = 1;
 		
 		m44.M[3][0] = 0;m44.M[3][1] = 0;m44.M[3][2] = 0;m44.M[3][3] = 0;
-		
 	}
-	
 	/*
-		欧拉角度
+		根据欧拉角度建立旋转矩阵
 	*/
 	void Build_XYZ_Rotation_Matrix44(float theta_x, 
 		float theta_y, 
 		float theta_z,
 		CMatrix44& mrot)  
 	{
-		// this helper function takes a set if euler angles and computes
-		// a rotation matrix from them, usefull for object and camera
-		// work, also  we will do a little testing in the function to determine
-		// the rotations that need to be performed, since there's no
-		// reason to perform extra matrix multiplies if the angles are
-		// zero!
 		
-		CMatrix44 mx, my, mz, mtmp;       // working matrices
-		float sin_theta=0, cos_theta=0;   // used to initialize matrices
+		
+		CMatrix44 mx, my, mz, mtmp;      
+		float sin_theta=0, cos_theta=0;   
 		int rot_seq = 0;                  // 1 for x, 2 for y, 4 for z
 		
-		// step 0: fill in with identity matrix
+	
 		(mrot).Identify();
 		
-		// step 1: based on zero and non-zero rotation angles, determine
-		// rotation sequence
+	
 		if (fabs(theta_x) > EPSILON_E5) // x
 			rot_seq = rot_seq | 1;
 		
@@ -350,7 +364,7 @@ coord_select:如何变换坐标
 		if (fabs(theta_z) > EPSILON_E5) // z
 			rot_seq = rot_seq | 4;
 		
-		// now case on sequence
+	
 		switch(rot_seq)
 		{
 		case 0: // no rotation
@@ -367,9 +381,9 @@ coord_select:如何变换坐标
 				mx.M[1][0] = 0;mx.M[1][1] = cos_theta;mx.M[1][2] = sin_theta;mx.M[1][3] = 0;
 				mx.M[2][0] = 0;mx.M[2][1] = -sin_theta;mx.M[2][2] = cos_theta;mx.M[2][3] = 0;
 				mx.M[3][0] = 0;mx.M[3][1] = 0;mx.M[3][2] = 0;mx.M[3][3] = 1;
-
-
-
+				
+				
+				
 				mrot = mx;
 				return;
 				
@@ -384,8 +398,8 @@ coord_select:如何变换坐标
 				my.M[1][0] = 0;my.M[1][1] = 1;my.M[1][2] = 0;my.M[1][3] = 0;
 				my.M[2][0] = sin_theta;my.M[2][1] = 0;my.M[2][2] = cos_theta;my.M[2][3] = 0;
 				my.M[3][0] = 0;my.M[3][1] = 0;my.M[3][2] = 0;my.M[3][3] = 1;
-
-
+				
+				
 				
 				mrot = my;
 				return;
@@ -394,7 +408,7 @@ coord_select:如何变换坐标
 			
 		case 3: // xy rotation
 			{
-				// compute the sine and cosine of the angle for x
+			
 				cos_theta = math3d.Fast_Cos(theta_x);
 				sin_theta = math3d.Fast_Sin(theta_x);
 				
@@ -402,10 +416,10 @@ coord_select:如何变换坐标
 				mx.M[1][0] = 0;mx.M[1][1] = cos_theta;mx.M[1][2] = sin_theta;mx.M[1][3] = 0;
 				mx.M[2][0] = 0;mx.M[2][1] = -sin_theta;mx.M[2][2] = cos_theta;mx.M[2][3] = 0;
 				mx.M[3][0] = 0;mx.M[3][1] = 0;mx.M[3][2] = 0;mx.M[3][3] = 1;
-			
-
 				
-				// compute the sine and cosine of the angle for y
+				
+				
+			
 				cos_theta = math3d.Fast_Cos(theta_y);
 				sin_theta = math3d.Fast_Sin(theta_y);
 				
@@ -413,9 +427,9 @@ coord_select:如何变换坐标
 				my.M[1][0] = 0;my.M[1][1] = 1;my.M[1][2] = 0;my.M[1][3] = 0;
 				my.M[2][0] = sin_theta;my.M[2][1] = 0;my.M[2][2] = cos_theta;my.M[2][3] = 0;
 				my.M[3][0] = 0;my.M[3][1] = 0;my.M[3][2] = 0;my.M[3][3] = 1;
-
 				
-				// concatenate matrices 
+				
+		
 				mrot = mx * my;
 				
 				return;
@@ -424,7 +438,7 @@ coord_select:如何变换坐标
 			
 		case 4: // z rotation
 			{
-				// compute the sine and cosine of the angle
+			
 				cos_theta = math3d.Fast_Cos(theta_z);
 				sin_theta = math3d.Fast_Sin(theta_z);
 				
@@ -432,10 +446,10 @@ coord_select:如何变换坐标
 				mz.M[1][0] = -sin_theta;mz.M[1][1] = cos_theta;mz.M[1][2] = 0;mz.M[1][3] = 0;
 				mz.M[2][0] = 0;mz.M[2][1] = 0;mz.M[2][2] = 1;mz.M[2][3] = 0;
 				mz.M[3][0] = 0;mz.M[3][1] = 0;mz.M[3][2] = 0;mz.M[3][3] = 1;
-
 				
 				
-				// that's it, copy to output matrix
+				
+			
 				
 				mrot = mz;
 				return;
@@ -444,7 +458,6 @@ coord_select:如何变换坐标
 			
 		case 5: // xz rotation
 			{
-				// compute the sine and cosine of the angle x
 				cos_theta = math3d.Fast_Cos(theta_x);
 				sin_theta = math3d.Fast_Sin(theta_x);
 				
@@ -452,9 +465,8 @@ coord_select:如何变换坐标
 				mx.M[1][0] = 0;mx.M[1][1] = cos_theta;mx.M[1][2] = sin_theta;mx.M[1][3] = 0;
 				mx.M[2][0] = 0;mx.M[2][1] = -sin_theta;mx.M[2][2] = cos_theta;mx.M[2][3] = 0;
 				mx.M[3][0] = 0;mx.M[3][1] = 0;mx.M[3][2] = 0;mx.M[3][3] = 1;
-
 				
-				// compute the sine and cosine of the angle z
+				
 				cos_theta = math3d.Fast_Cos(theta_z);
 				sin_theta = math3d.Fast_Sin(theta_z);
 				
@@ -462,11 +474,10 @@ coord_select:如何变换坐标
 				mz.M[1][0] = -sin_theta;mz.M[1][1] = cos_theta;mz.M[1][2] = 0;mz.M[1][3] = 0;
 				mz.M[2][0] = 0;mz.M[2][1] = 0;mx.M[2][2] = 1;mz.M[2][3] = 0;
 				mz.M[3][0] = 0;mz.M[3][1] = 0;mx.M[3][2] = 0;mz.M[3][3] = 1;
-
-
 				
-				// concatenate matrices 
-
+				
+				
+				
 				mrot = mx * mz;
 				return;
 				
@@ -474,16 +485,16 @@ coord_select:如何变换坐标
 			
 		case 6: // yz rotation
 			{
-				// compute the sine and cosine of the angle y
+			
 				cos_theta = math3d.Fast_Cos(theta_y);
 				sin_theta = math3d.Fast_Sin(theta_y);
 				my.M[0][0] = cos_theta;my.M[0][1] = 0;my.M[0][2] = -sin_theta;my.M[0][3] = 0;
 				my.M[1][0] = 0;my.M[1][1] = 1;my.M[1][2] = 0;my.M[1][3] = 0;
 				my.M[2][0] = sin_theta;my.M[2][1] = 0;my.M[2][2] = cos_theta;my.M[2][3] = 0;
 				my.M[3][0] = 0;my.M[3][1] = 0;my.M[3][2] = 0;my.M[3][3] = 1;
-
 				
-				// compute the sine and cosine of the angle z
+				
+		
 				cos_theta = math3d.Fast_Cos(theta_z);
 				sin_theta = math3d.Fast_Sin(theta_z);
 				
@@ -492,9 +503,9 @@ coord_select:如何变换坐标
 				mz.M[2][0] = 0;mz.M[2][1] = 0;mz.M[2][2] = 1;mz.M[2][3] = 0;
 				mz.M[3][0] = 0;mz.M[3][1] = 0;mz.M[3][2] = 0;mz.M[3][3] = 1;
 				
-
 				
-
+				
+				
 				mrot = my * mz;
 				return;
 				
@@ -502,7 +513,6 @@ coord_select:如何变换坐标
 			
 		case 7: // xyz rotation
 			{
-				// compute the sine and cosine of the angle x
 				cos_theta = math3d.Fast_Cos(theta_x);
 				sin_theta = math3d.Fast_Sin(theta_x);
 				
@@ -512,8 +522,6 @@ coord_select:如何变换坐标
 				mx.M[3][0] = 0;mx.M[3][1] = 0;mx.M[3][2] = 0;mx.M[3][3] = 1;
 				
 				
-				
-				// compute the sine and cosine of the angle y
 				cos_theta = math3d.Fast_Cos(theta_y);
 				sin_theta = math3d.Fast_Sin(theta_y);
 				
@@ -522,9 +530,8 @@ coord_select:如何变换坐标
 				my.M[2][0] = sin_theta;my.M[2][1] = 0;my.M[2][2] = cos_theta;my.M[2][3] = 0;
 				my.M[3][0] = 0;my.M[3][1] = 0;my.M[3][2] = 0;my.M[3][3] = 1;
 				
-
 				
-				// compute the sine and cosine of the angle z
+				
 				cos_theta = math3d.Fast_Cos(theta_z);
 				sin_theta = math3d.Fast_Sin(theta_z);
 				
@@ -533,9 +540,8 @@ coord_select:如何变换坐标
 				mz.M[2][0] = 0;mz.M[2][1] = 0;mz.M[2][2] = 1;mz.M[2][3] = 0;
 				mz.M[3][0] = 0;mz.M[3][1] = 0;mz.M[3][2] = 0;mz.M[3][3] = 1;
 				
-
-				// concatenate matrices, watch order!
-
+				
+				
 				mtmp = mx * my;
 				mrot = mtmp * mz;
 				
@@ -545,62 +551,76 @@ coord_select:如何变换坐标
 			
       } // end switch
 	  
-} // end Build_XYZ_Rotation_MATRIX4X4                                    
+} 
 
-
-
-
-
-
-
-
-  /*
-		将物体的坐标从齐次坐标转换为真正的3D坐标 -- 物体级
-		*/
-		void Convert_From_Homogeneous4D_Object(CObject4DV1& obj)
+/*
+将物体的坐标从齐次坐标转换为真正的3D坐标 -- 物体级
+*/
+void Convert_From_Homogeneous4D_Object(CObject4DV1& obj)
+{
+	for(int vertex=0;vertex<obj.m_polys;vertex++)
+	{
+		obj.m_vlist_trans[vertex].DivByW();
+	}
+}
+/*
+将多边形的坐标从齐次坐标转换为非齐次的坐标 -- 列表级别
+*/
+void Convert_From_Homogeneous4D_Renderlist(CRenderList4DV1 & rend_list)
+{
+	for(int poly=0;poly<rend_list.m_polys;poly++)
+	{
+		CPolyF4DV1* curr_poly = rend_list.m_poly_ptrs[poly];
+		
+		if((curr_poly == NULL) || !(curr_poly->m_state & POLY4DV1_STATE_ACTIVE) ||
+			(curr_poly->m_state & POLY4DV1_STATE_CLIPPED) || (curr_poly->m_state & POLY4DV1_STATE_BACKFACE))
+			continue;
+		
+		for(int vertex=0;vertex<3;vertex++)
 		{
-			for(int vertex=0;vertex<obj.m_polys;vertex++)
+			if(curr_poly->m_tvlist[vertex].DivByW() == 1)
 			{
-				obj.m_vlist_trans[vertex].DivByW();
-			}
-		}
-		/*
-		将多边形的坐标从齐次坐标转换为非齐次的坐标 -- 列表级别
-		*/
-		void Convert_From_Homogeneous4D_Renderlist(CRenderList4DV1 & rend_list)
-		{
-			for(int poly=0;poly<rend_list.m_polys;poly++)
-			{
-				CPolyF4DV1* curr_poly = rend_list.m_poly_ptrs[poly];
-				
-				if((curr_poly == NULL) || !(curr_poly->m_state & POLY4DV1_STATE_ACTIVE) ||
-					(curr_poly->m_state & POLY4DV1_STATE_CLIPPED) || (curr_poly->m_state & POLY4DV1_STATE_BACKFACE))
-					continue;
-				
-				for(int vertex=0;vertex<3;vertex++)
-				{
-					if(curr_poly->m_tvlist[vertex].DivByW() == 1)
-					{
-						printf("Convert_From_Homogeneous4D_Rendlist Faild!");
-					}
-				}
-				
-				
+				printf("Convert_From_Homogeneous4D_Rendlist Faild!");
 			}
 		}
 		
 		
-		
-		CMath3D math3d;
+	}
+}
+/*
+	旋转一个物体的模型坐标
+	，并旋转其坐标轴方向向量
+*/
+void Rotate_XYZ_Object(CObject4DV1 obj,
+					   float theta_x,
+					   float theta_y,
+					   float theta_z)
+{
+	CMatrix44 mrot;
+	Build_XYZ_Rotation_Matrix44(theta_x,theta_y,theta_z,mrot);
+	
+	for(int vertex = 0 ;vertex < obj.m_vertices;vertex++)
+	{
+		CPoint presult;
+
+		math3d.Mat_Mul_4D_44(obj.m_vlist_local[vertex],mrot,presult);
+
+		obj.m_vlist_local[vertex] = presult;
+	}
+
+	CVector4D vresult;
+	math3d.Mat_Mul_4D_44(obj.m_ux,mrot,vresult);
+	obj.m_ux = vresult;
+	math3d.Mat_Mul_4D_44(obj.m_uy,mrot,vresult);
+	obj.m_uy = vresult;
+	math3d.Mat_Mul_4D_44(obj.m_uz,mrot,vresult);
+	obj.m_uz = vresult;
+
+}
+
+
+CMath3D math3d;
 };
-
-
-
-
-
-
-
-
 
 
 
@@ -704,7 +724,6 @@ int CRenderPipeline3DV1::Model_To_World_Renderlist(CRenderList4DV1& rend_list,CP
 			for(vertex = 0;vertex < 3;vertex++)
 			{
 				curr_poly->m_tvlist[vertex] = curr_poly->m_vlist[vertex] + world_pos;
-//				assert(curr_poly->m_tvlist[vertex].GetX() == curr_poly->m_vlist[vertex].GetX() + world_pos.GetX();
 			}
 		}
 	}else
@@ -721,7 +740,7 @@ int CRenderPipeline3DV1::Model_To_World_Renderlist(CRenderList4DV1& rend_list,CP
 			for(vertex = 0;vertex < 3;vertex++)
 			{
 				curr_poly->m_tvlist[vertex] = curr_poly->m_tvlist[vertex] + world_pos;
-
+				
 			}
 		}
 	}

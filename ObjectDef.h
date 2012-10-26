@@ -138,6 +138,10 @@ public :
 	{
 		m_polys = 0;
 	}
+	/*
+		插入一个顶点是基于物体对象的多边形对象到渲染列表中
+
+	*/
 	int Insert_Poly4DV1(CPoly4DV1 poly)
 	{
 		if(m_polys >= RENDERLIST4DV1_MAX_POLYS)
@@ -149,16 +153,12 @@ public :
 		m_poly_data[m_polys].m_attr  = poly.m_attr;
 		m_poly_data[m_polys].m_color = poly.m_color;
 		
-		m_poly_data[m_polys].m_tvlist[0] = poly.m_vlist[poly.m_vert[0]];
-		
-		m_poly_data[m_polys].m_tvlist[1] = poly.m_vlist[poly.m_vert[1]];
-		
+		m_poly_data[m_polys].m_tvlist[0] = poly.m_vlist[poly.m_vert[0]];		
+		m_poly_data[m_polys].m_tvlist[1] = poly.m_vlist[poly.m_vert[1]];		
 		m_poly_data[m_polys].m_tvlist[2] = poly.m_vlist[poly.m_vert[2]];
 		
-		m_poly_data[m_polys].m_vlist[0] = poly.m_vlist[poly.m_vert[0]];
-		
-		m_poly_data[m_polys].m_vlist[1] = poly.m_vlist[poly.m_vert[1]];
-		
+		m_poly_data[m_polys].m_vlist[0] = poly.m_vlist[poly.m_vert[0]];		
+		m_poly_data[m_polys].m_vlist[1] = poly.m_vlist[poly.m_vert[1]];		
 		m_poly_data[m_polys].m_vlist[2] = poly.m_vlist[poly.m_vert[2]];
 		
 		if(m_polys == 0)
@@ -177,7 +177,9 @@ public :
 		
 		return 1;
 	}
-	
+	/*
+		插入为自包含的多边形到渲染列表中
+	*/
 	int Insert_PolyF4DV1(CPolyF4DV1 poly)
 	{
 		if(m_polys >= RENDERLIST4DV1_MAX_POLYS)
@@ -204,7 +206,11 @@ public :
 		
 		return 1;
 	}
-	
+	/*
+		插入物体对象到渲染列表中
+		insert_local = 1: 指定是将物体对象的本地坐标复制到渲染列表中
+		insert_local = 0: 指定是将物体对象的变换坐标复制到渲染列表中
+	*/
 	int Insert_Object(CObject4DV1 obj,int insert_local)
 	{
 		if (!(obj.m_state & OBJECT4DV1_STATE_ACTIVE) ||
@@ -443,6 +449,12 @@ public:
 		
 		
 	}
+	
+	/*
+		根据欧拉模式下相机的3个旋转角度初始化相机的变换矩阵(旋转矩阵和平移矩阵合并)
+		cam_rot_seq:取值CAM_ROT_SEQ_XYZ,CAM_ROT_SEQ_XZY ,CAM_ROT_SEQ_YXZ,CAM_ROT_SEQ_YZX
+		CAM_ROT_SEQ_ZXY,CAM_ROT_SEQ_ZYX共6个取值
+	*/
 	void Build_Cam4DV1_Matrix_Euler(int cam_rot_seq)
 	{
 		//mmcam = my(-1) *mx(-1) * mz(-1);
