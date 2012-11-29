@@ -9,7 +9,16 @@
 
 ### 参考文献资料 ###
 
-* 1.DETECTION OF MOVING OBJECTS IN IMAGE SEQUENCES
-USING 3D VELOCITY FILTERS http://www.metapress.com/content/d6p7773526758003/fulltext.pdf
 
-* 2.http://design-engine.com/industry-news/a-history-lesson-on-alias-3d-software
+DETECTION OF MOVING OBJECTS IN IMAGE SEQUENCES
+USING 3D VELOCITY FILTERS
+========================
+* 1. http://www.metapress.com/content/d6p7773526758003/fulltext.pdf
+
+外文翻译
+========================
+* 3.http://computer.howstuffworks.com/3dgraphics.htm
+
+
+* 3.http://design-engine.com/industry-news/a-history-lesson-on-alias-3d-software
+
