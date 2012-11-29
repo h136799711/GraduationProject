@@ -8,6 +8,8 @@
 * 4.接下来任务：加入光照，
 
 ### 参考文献资料 ###
-DETECTION OF MOVING OBJECTS IN IMAGE SEQUENCES
-USING 3D VELOCITY FILTERS
-http://www.metapress.com/content/d6p7773526758003/fulltext.pdf
+
+* 1.DETECTION OF MOVING OBJECTS IN IMAGE SEQUENCES
+USING 3D VELOCITY FILTERS http://www.metapress.com/content/d6p7773526758003/fulltext.pdf
+
+* 2.http://design-engine.com/industry-news/a-history-lesson-on-alias-3d-software
