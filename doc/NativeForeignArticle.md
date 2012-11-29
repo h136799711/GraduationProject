@@ -55,8 +55,8 @@ When we look out our windows, we see scenes made up of all sorts of shapes, with
 
 <p>
 	When we meet a surface in the real world, we can get information about it in two key ways. We can look at it, sometimes from several angles, and we can touch it to see whether it's hard or soft. In a 3-D graphic image, however, we can only look at the surface to get all the information possible. All that information breaks down into three areas: 
-<strong>Color</strong>:</br> What color is it? Is it the same color all over?
-<strong>Texture</strong>:</br> Does it appear to be smooth, or does it have lines, bumps, craters or some other irregularity on the surface?
+<strong>Color</strong>: What color is it? Is it the same color all over?
+<strong>Texture</strong>: Does it appear to be smooth, or does it have lines, bumps, craters or some other irregularity on the surface?
 Reflectance: How much light does it reflect? Are reflections of other items in the surface sharp or fuzzy?
 One way to make an image look "real" is to have a wide variety of these three features across the different parts of the image. Look around you now: Your computer keyboard has a different color/texture/reflectance than your desktop, which has a different color/texture/reflectance than your arm. For realistic color, it’s important for the computer to be able to choose from millions of different colors for the pixels making up an image. Variety in texture comes both from mathematical models for surfaces ranging from frog skin to Jell-o gelatin to stored “texture maps” that are applied to surfaces. We also associate qualities that we can't see -- soft, hard, warm, cold -- with particular combinations of color, texture and reflectance. If one of them is wrong, the illusion of reality is shattered.
 We'll take a look at lighting and perspective in the next section.
