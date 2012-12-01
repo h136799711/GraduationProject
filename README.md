@@ -8,17 +8,16 @@
 * 4.接下来任务：加入光照，
 
 ### 参考文献资料 ###
+-----------------------------------------------------
+
+* 1.[DETECTION OF MOVING OBJECTS IN IMAGE SEQUENCES USING 3D VELOCITY FILTERS
+](http://www.metapress.com/content/d6p7773526758003/fulltext.pdf "An article")
+
+* 2.http://computer.howstuffworks.com/3dgraphics.htm
 
 
-DETECTION OF MOVING OBJECTS IN IMAGE SEQUENCES
-USING 3D VELOCITY FILTERS
-========================
-* 1. http://www.metapress.com/content/d6p7773526758003/fulltext.pdf
+* 3.[3D Game Engine Programming](http://design-engine.com/industry-news/a-history-lesson-on-alias-3d-software
 
-外文翻译
-========================
-* 3.http://computer.howstuffworks.com/3dgraphics.htm
+http://3dgep.com/?p=1700 "3D Game Engine Programming")
 
-
-* 3.http://design-engine.com/industry-news/a-history-lesson-on-alias-3d-software
-
+*4.[Developer NVIDIA]( http://developer.download.nvidia.com/books/gpu_gems_3/samples/gems3_ch30.pdf "Developer NVIDIA")
