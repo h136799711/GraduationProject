@@ -18,4 +18,4 @@
 
 * 3.[3D Game Engine Programming](http://design-engine.com/industry-news/a-history-lesson-on-alias-3d-software "3D Game Engine Programming")
 
-*4.[Developer NVIDIA]( http://developer.download.nvidia.com/books/gpu_gems_3/samples/gems3_ch30.pdf "Developer NVIDIA")
+* 4.[Developer NVIDIA]( http://developer.download.nvidia.com/books/gpu_gems_3/samples/gems3_ch30.pdf "Developer NVIDIA")
