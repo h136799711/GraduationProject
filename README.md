@@ -9,7 +9,7 @@
 
 ### Document  ###
 -------------------------------------------------------
-* 1.[外文翻译](https://github.com/h136799711/GraduationProject/tree/master/doc/文献翻译.doc "外文翻译")
+* 1.[外文翻译](https://github.com/h136799711/GraduationProject/raw/master/doc/文献翻译.doc "外文翻译")
 
 
 
