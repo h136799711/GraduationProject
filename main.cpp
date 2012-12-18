@@ -349,8 +349,8 @@ int App_Main(void *params ,int num_params)
 	draw3d.Draw_Text_GDI("ESC 退出,左右键，旋转三角形，WASD键平移三角形",10,60,hcdxBuilder.RGB16Bit(0,255,255),hcdxBuilder.lpddsback);
 	DrawRect(60,60,380,380,hcdxBuilder.RGB16Bit(0,255,255),hcdxBuilder.Get_Back_Buffer(),hcdxBuilder.Get_Back_lPitch());
 	
-	int x0 = rendList.m_poly_ptrs[1]->m_tvlist[0].GetX(),y0 = rendList.m_poly_ptrs[1]->m_tvlist[0].GetY();
-	DrawRect(x0,y0,x0+5,y0+5,hcdxBuilder.RGB16Bit(150,150,150),hcdxBuilder.Get_Back_Buffer(),hcdxBuilder.Get_Back_lPitch());
+//	int x0 = rendList.m_poly_ptrs[1]->m_tvlist[0].GetX(),y0 = rendList.m_poly_ptrs[1]->m_tvlist[0].GetY();
+//	DrawRect(x0,y0,x0+5,y0+5,hcdxBuilder.RGB16Bit(150,150,150),hcdxBuilder.Get_Back_Buffer(),hcdxBuilder.Get_Back_lPitch());
 	
 
 	hcdxBuilder.DDraw_Unlock_Back_Surface();

@@ -313,36 +313,36 @@ coord_select:如何变换坐标
 		float alpha = 0.5*cam.m_viewport_width - 0.5;
 		float beta  = 0.5*cam.m_viewport_height - 0.5;
 		
-		m44.M[0][0] = alpha;m44.M[0][1] = 0;m44.M[0][2] = 0;m44.M[0][3] = 0;
+		m44.M[0][0] = alpha;	m44.M[0][1] = 0;	m44.M[0][2] = 0;	m44.M[0][3] = 0;
 		
-		m44.M[1][0] = 0;m44.M[1][1] = -beta;m44.M[1][2] = 0;m44.M[1][3] = 0;
+		m44.M[1][0] = 0;		m44.M[1][1] = -beta;m44.M[1][2] = 0;	m44.M[1][3] = 0;
 		
-		m44.M[2][0] = alpha;m44.M[2][1] = beta;m44.M[2][2] = 1;m44.M[2][3] = 0;
+		m44.M[2][0] = alpha;	m44.M[2][1] = beta;	m44.M[2][2] = 1;	m44.M[2][3] = 0;
 		
-		m44.M[3][0] = 0;m44.M[3][1] = 0;m44.M[3][2] = 0;m44.M[3][3] = 1;
+		m44.M[3][0] = 0;		m44.M[3][1] = 0;	m44.M[3][2] = 0;	m44.M[3][3] = 1;
 		
 	}
 	/*///////////////////
-		建立相机坐标直接到屏幕坐标的变换矩阵
-		1.相机中的参数视平面大小必须与视口大小一致
-		2.经过此矩阵变换之后的坐标是4D齐次的，所以之后必须转换为3D坐标即除以W分量
-		3.
+	建立相机坐标直接到屏幕坐标的变换矩阵
+	1.相机中的参数视平面大小必须与视口大小一致
+	2.经过此矩阵变换之后的坐标是4D齐次的，所以之后必须转换为3D坐标即除以W分量
+	3.
 	*/////////////
 	void Build_Camera_To_Screen_Matrix44(CCamera4DV1 cam,CMatrix44& m44)
 	{
 		float alpha = 0.5*cam.m_viewport_width - 0.5;
 		float beta  = 0.5*cam.m_viewport_height - 0.5;
 		
-		m44.M[0][0] = cam.m_view_dist;m44.M[0][1] = 0;m44.M[0][2] = 0;m44.M[0][3] = 0;
+		m44.M[0][0] = cam.m_view_dist;	m44.M[0][1] = 0;				m44.M[0][2] = 0;	m44.M[0][3] = 0;
 		
-		m44.M[1][0] = 0;m44.M[1][1] = -cam.m_view_dist;m44.M[1][2] = 0;m44.M[1][3] = 0;
+		m44.M[1][0] = 0;				m44.M[1][1] = -cam.m_view_dist;	m44.M[1][2] = 0;	m44.M[1][3] = 0;
 		
-		m44.M[2][0] = alpha;m44.M[2][1] = beta;m44.M[2][2] = 1;m44.M[2][3] = 1;
+		m44.M[2][0] = alpha;			m44.M[2][1] = beta;				m44.M[2][2] = 1;	m44.M[2][3] = 1;
 		
-		m44.M[3][0] = 0;m44.M[3][1] = 0;m44.M[3][2] = 0;m44.M[3][3] = 0;
+		m44.M[3][0] = 0;				m44.M[3][1] = 0;				m44.M[3][2] = 0;	m44.M[3][3] = 0;
 	}
 	/*
-		根据欧拉角度建立旋转矩阵
+	根据欧拉角度建立旋转矩阵
 	*/
 	void Build_XYZ_Rotation_Matrix44(float theta_x, 
 		float theta_y, 
@@ -355,10 +355,10 @@ coord_select:如何变换坐标
 		float sin_theta=0, cos_theta=0;   
 		int rot_seq = 0;                  // 1 for x, 2 for y, 4 for z
 		
-	
+		
 		(mrot).Identify();
 		
-	
+		
 		if (fabs(theta_x) > EPSILON_E5) // x
 			rot_seq = rot_seq | 1;
 		
@@ -368,7 +368,7 @@ coord_select:如何变换坐标
 		if (fabs(theta_z) > EPSILON_E5) // z
 			rot_seq = rot_seq | 4;
 		
-	
+		
 		switch(rot_seq)
 		{
 		case 0: // no rotation
@@ -412,7 +412,7 @@ coord_select:如何变换坐标
 			
 		case 3: // xy rotation
 			{
-			
+				
 				cos_theta = math3d.Fast_Cos(theta_x);
 				sin_theta = math3d.Fast_Sin(theta_x);
 				
@@ -423,7 +423,7 @@ coord_select:如何变换坐标
 				
 				
 				
-			
+				
 				cos_theta = math3d.Fast_Cos(theta_y);
 				sin_theta = math3d.Fast_Sin(theta_y);
 				
@@ -433,7 +433,7 @@ coord_select:如何变换坐标
 				my.M[3][0] = 0;my.M[3][1] = 0;my.M[3][2] = 0;my.M[3][3] = 1;
 				
 				
-		
+				
 				mrot = mx * my;
 				
 				return;
@@ -442,7 +442,7 @@ coord_select:如何变换坐标
 			
 		case 4: // z rotation
 			{
-			
+				
 				cos_theta = math3d.Fast_Cos(theta_z);
 				sin_theta = math3d.Fast_Sin(theta_z);
 				
@@ -453,7 +453,7 @@ coord_select:如何变换坐标
 				
 				
 				
-			
+				
 				
 				mrot = mz;
 				return;
@@ -489,7 +489,7 @@ coord_select:如何变换坐标
 			
 		case 6: // yz rotation
 			{
-			
+				
 				cos_theta = math3d.Fast_Cos(theta_y);
 				sin_theta = math3d.Fast_Sin(theta_y);
 				my.M[0][0] = cos_theta;my.M[0][1] = 0;my.M[0][2] = -sin_theta;my.M[0][3] = 0;
@@ -498,7 +498,7 @@ coord_select:如何变换坐标
 				my.M[3][0] = 0;my.M[3][1] = 0;my.M[3][2] = 0;my.M[3][3] = 1;
 				
 				
-		
+				
 				cos_theta = math3d.Fast_Cos(theta_z);
 				sin_theta = math3d.Fast_Sin(theta_z);
 				
@@ -592,8 +592,8 @@ void Convert_From_Homogeneous4D_Renderlist(CRenderList4DV1 & rend_list)
 	}
 }
 /*
-	旋转一个物体的模型坐标
-	，并旋转其坐标轴方向向量
+旋转一个物体的模型坐标
+，并旋转其坐标轴方向向量
 */
 void Rotate_XYZ_Object(CObject4DV1 obj,
 					   float theta_x,
@@ -606,12 +606,12 @@ void Rotate_XYZ_Object(CObject4DV1 obj,
 	for(int vertex = 0 ;vertex < obj.m_vertices;vertex++)
 	{
 		CPoint4D presult;
-
+		
 		math3d.Mat_Mul_4D_44(obj.m_vlist_local[vertex],mrot,presult);
-
+		
 		obj.m_vlist_local[vertex] = presult;
 	}
-
+	
 	CVector4D vresult;
 	math3d.Mat_Mul_4D_44(obj.m_ux,mrot,vresult);
 	obj.m_ux = vresult;
@@ -619,7 +619,7 @@ void Rotate_XYZ_Object(CObject4DV1 obj,
 	obj.m_uy = vresult;
 	math3d.Mat_Mul_4D_44(obj.m_uz,mrot,vresult);
 	obj.m_uz = vresult;
-
+	
 }
 
 

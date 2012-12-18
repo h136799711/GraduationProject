@@ -67,13 +67,11 @@ CPoint4D poly_pos;
 //用于立方体
 CPlgLoader plgloader;
 CObject4DV1 sphere;
-float ang_x = 0;
-float ang_y = 0;
-float ang_z = 0;
-
+float ang_x = 0,ang_y = 0,ang_z = 0;
+int vx=0,vy=0;
 void DrawRect(int x0,int y0,int x1,int y1,int color,UCHAR* video_buffer,int lpitch)
 {
-
+	
 	draw3d.Draw_Line16(x0,y0,x1,y0,color,video_buffer,lpitch);
 	draw3d.Draw_Line16(x1,y0,x1,y1,color,video_buffer,lpitch);
 	draw3d.Draw_Line16(x1,y1,x0,y1,color,video_buffer,lpitch);
@@ -170,7 +168,6 @@ int App_Init(void *params ,int num_params)
 	vrot.SetXYZW(0,0,0,1);
 	
 	
-	math3d.Build_Sin_Cos_Tables(cos_look,sin_look);
 
 	
 	
@@ -206,13 +203,13 @@ int App_Main(void *params ,int num_params)
 		hcLog.Write_Error("\n App_Main::hcInput.DInput_Read_Keyboard FAILED!");
 		return 0;
 	}
-	
-	ang_x = ang_z;
+	vx = vy = 0;
 	Input_Process();
 		
 	sphere.Reset_Object();
 	rpl3d.Build_XYZ_Rotation_Matrix44(ang_x,ang_y,ang_z,mrot);
-
+	mrot.M[3][0] = vx;
+	mrot.M[3][1] = vy;
 	rpl3d.Transform_Object(sphere,mrot,TRANSFORM_LOCAL_ONLY,1);
 	
 	rpl3d.Model_To_World_Object(sphere);
@@ -234,9 +231,9 @@ int App_Main(void *params ,int num_params)
 	
 	draw3d.Draw_Object_Wire16(sphere,hcdxBuilder.Get_Back_Buffer(),hcdxBuilder.Get_Back_lPitch());
 	
-	draw3d.Draw_Text_GDI("3D立方体测试",10,10,hcdxBuilder.RGB16Bit(0,255,255),hcdxBuilder.lpddsback);
+	draw3d.Draw_Text_GDI("3D立方体测试 方向键控制旋转角度",10,10,hcdxBuilder.RGB16Bit(0,255,255),hcdxBuilder.lpddsback);
 
-	DrawRect(60,60,380,380,hcdxBuilder.RGB16Bit(0,255,255),hcdxBuilder.Get_Back_Buffer(),hcdxBuilder.Get_Back_lPitch());
+	DrawRect(60,60,350,350,hcdxBuilder.RGB16Bit(0,255,255),hcdxBuilder.Get_Back_Buffer(),hcdxBuilder.Get_Back_lPitch());
 	
 	
 	hcdxBuilder.DDraw_Unlock_Back_Surface();
@@ -270,11 +267,11 @@ int Input_Process()
 	}
 	if(KEY_DOWN(VK_RIGHT) || hcInput.keyboard_state[DIK_RIGHT])
 	{
-		ang_y++;
+		ang_y = 1;
 	}
 	if(KEY_DOWN(VK_LEFT) || hcInput.keyboard_state[DIK_LEFT])
 	{
-		ang_y--;		
+		ang_y = -1;		
 	}
 	if(KEY_DOWN(VK_UP) || hcInput.keyboard_state[DIK_UP])
 	{
@@ -283,6 +280,22 @@ int Input_Process()
 	if(KEY_DOWN(VK_DOWN) || hcInput.keyboard_state[DIK_DOWN])
 	{
 		ang_x = -1;		
+	}
+	if(KEY_DOWN('W') || hcInput.keyboard_state[DIK_W])
+	{
+		vy = 1;		
+	}
+	if(KEY_DOWN('S') || hcInput.keyboard_state[DIK_S])
+	{
+		vy = -1;		
+	}
+	if(KEY_DOWN('A') || hcInput.keyboard_state[DIK_A])
+	{
+		vx = -1;	
+	}
+	if(KEY_DOWN('D') || hcInput.keyboard_state[DIK_D])
+	{
+		vx = 1;		
 	}
 	return 1;
 }
