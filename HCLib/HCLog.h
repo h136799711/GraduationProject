@@ -1,21 +1,20 @@
 #ifndef H_HCLOG_INCLUDED
 #define H_HCLOG_INCLUDED
-#pragma once
+
 #include <stdio.h>
 #include <sys/timeb.h>
 #include <stdarg.h>
 #include <time.h>
-
+//默认日志文件名
 #define DEFAULT_LOG_FILE_NAME	"log.txt"
 class HCLog
 {
 
 protected :
-	FILE *fp_log;                           // general error file
-//char log_filename[80];                  // error file name
+	FILE *fp_log;                           // log日志
+
 public:
 	
-	// error functions
 	/*
 	打开一个错误记录文件
 

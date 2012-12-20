@@ -1,8 +1,7 @@
 /*****************************************************************************************
 **	Version: 2.0v																**********
 **	author:hebidu.																**********
-**	Description:TestProject about math library.									**********
-**	To ensure the correctness of the math library								**********
+**	Description:数学库的测试项目.												**********
 **	date :2012-10-23	13:00													**********	
 *****************************************************************************************/
 #include "..\HCLib\HCMath.h"
@@ -15,6 +14,7 @@
 
 #include <assert.h>
 #include "Tools.h"
+#include "test_ctest.h"
 //GetSet测试
 void Test_Vector_GetSet();
 //operator操作符测试
@@ -42,6 +42,7 @@ int main()
 	freopen("G:\\OUTPUT.txt", "w", stdout);
 	freopen("G:\\ERROR.txt", "w", stderr);
 #endif
+	CTest_test();
 	printf("Test Begin\n");
 	Print_NewLine("BEGIN========================BEGIN");
 	Print_NewLine("");
@@ -56,9 +57,8 @@ int main()
 	Print_NewLine("TestMatrix Successed!!");
 	TestMath3D();
 	Print_NewLine("TestMath3D Successed!!");
-	TestRender3D();
-	Print_NewLine("TestRender3D Successed!!");
-
+	
+	
 	Print_NewLine("BEGIN========================BEGIN");
 	Print_NewLine("");
 	Print_NewLine("END=========================END");

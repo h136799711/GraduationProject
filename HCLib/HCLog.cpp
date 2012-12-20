@@ -55,21 +55,21 @@ int HCLog::Close_Error_File(void)
 
 int HCLog::Open_Error_File(char *filename, FILE *fp_override)
 {
-	// this function creates the output error file
+	// 打开记录错误文件
 	
-	// is user requesting special file handle? stdout, stderr, etc.?
+	 
 	if (fp_override)
 	{
 		fp_log = fp_override;
 	}
 	else
 	{
-		// test if this file is valid
+		// t测试文件是否有效
 		if ((fp_log = fopen(filename,"w"))==NULL)
 			return(0);
 	}
 	
-	// get the current time
+	// 得到当前的时间
 	struct _timeb timebuffer;
 	char *timeline;
 	char timestring[280];
@@ -82,7 +82,7 @@ int HCLog::Open_Error_File(char *filename, FILE *fp_override)
 	// write out error header with time
 	Write_Error("\nOpening Error Output File (%s) on %s\n",filename,timestring);
 	
-	// now the file is created, re-open with append mode
+	//现在文件已被创建, 使用追加模式重打开文件
 	
 	if (!fp_override)
 	{
@@ -91,7 +91,6 @@ int HCLog::Open_Error_File(char *filename, FILE *fp_override)
 			return(0);
 	}
 	
-	// return success
 	return(1);
 	
 } // end Open_Error_File

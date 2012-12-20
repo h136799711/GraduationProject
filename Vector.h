@@ -650,7 +650,7 @@ typedef CVector<4> CPoint4D;
 	  四元数 : Quat,q0为quat的w分量,qv为quat的x，y，z3个分量组合的3D向量
 	  theta : 角度(度数)
 	  v : 3D向量
-	  Quat = cos(theta/2) + sin(theta/2) * v;
+	  Quat = cos(theta/2) + sin(theta/2) * v; 此为与角度有关的四元数，用于旋转操作
 	  cos(theta/2) = q0;
 	  sin(theta/2) * v = qv;
 

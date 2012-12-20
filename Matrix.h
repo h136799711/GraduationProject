@@ -301,9 +301,8 @@ inline int CMatrix<2,2>::Identify()
 	memcpy(&M[0][0],&IDM22,sizeof(M));
 	return 1;
 }
-/*
-	取得此矩阵的逆矩阵，未实现
-*/
+
+
 template<>
 int CMatrix<2,2>::Inverse(CMatrix<2,2>& inv)
 {
