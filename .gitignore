@@ -1,7 +1,3 @@
-
-
-
-
 # Compiled Object files
 *.slo
 *.lo
@@ -25,7 +21,6 @@
 *.idb
 /Release
 /Debug
-log.txt
 /ConsoleTest\Debug/*.ilk
 /ConsoleTest\Debug/*.pdb
 /ConsoleTest/ERROR.txt
