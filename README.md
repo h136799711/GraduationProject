@@ -10,6 +10,7 @@
 ### 文档下载  ###
 -------------------------------------------------------
 * 1.[外文翻译](https://github.com/h136799711/GraduationProject/raw/master/doc/文献翻译.doc "外文翻译")
+* 2.[文献综述](https://github.com/h136799711/GraduationProject/raw/master/doc/文献综述.doc "文献综述")
 
 
 
