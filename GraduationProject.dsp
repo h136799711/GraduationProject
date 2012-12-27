@@ -236,6 +236,10 @@ SOURCE=.\RenderPipeline3DV1.h
 SOURCE=.\PLGLoader.h
 # End Source File
 # End Group
+# Begin Source File
+
+SOURCE=.\CTest.h
+# End Source File
 # End Group
 # Begin Group "Resource Files"
 
