@@ -1,6 +1,8 @@
+#define WIN32_LEAN_AND_MEAN	//不包括 MFC相关的
 
 #include "..\PLGLoader.h"
 #include "..\RenderPipeline3DV1.h"
+#include "..\HCLib\HCDDrawLib.h"
 #include "..\Draw3DV1.h"
 #include <stdio.h>
 #include <stdarg.h>
@@ -16,8 +18,8 @@ void TestRenderPipeline();
 int main()
 {
 #ifndef TO_FILE_HBD
-	freopen("G:\\test2_out.txt", "w", stdout);
-	freopen("G:\\test2_err.txt", "w", stderr);
+	freopen("d:\\test2_out.txt", "w", stdout);
+	freopen("d:\\test2_err.txt", "w", stderr);
 #endif
 	
 	TestPlgLoader();
@@ -109,7 +111,7 @@ void TestRenderPipeline()
 	rpl3d.Camera_To_Perspective_Screen_Renderlist(rendlist,cam);
 
 	UCHAR*dest_buffer = (UCHAR*)malloc(10*sizeof(UCHAR));
-	draw3d.Draw_RenderList4DV1_Wire16(rendlist,dest_buffer,1);
+//	draw3d.Draw_RenderList4DV1_Wire16(rendlist,dest_buffer,1);
 
 	render.Model_To_World_Renderlist(rendlist,poly_pos);
 	
@@ -153,7 +155,7 @@ void TestPlgLoader()
 	CObject4DV1 obj;
 	CVector4D scale,pos,rot;
 	char filename[64] ;
-	strcpy(filename,"cube1.plg");
+	strcpy(filename,"../asset/cube1.plg");
 	obj.m_attr = 14;
 	strcpy(obj.m_name,"cube");
 	scale.SetX(1.0f);scale.SetY(1.0f);scale.SetZ(1.0f);scale.SetW(1.0f);
@@ -161,6 +163,6 @@ void TestPlgLoader()
 	rot.SetX(0.0f);rot.SetY(0.0f);rot.SetZ(0.0f);rot.SetW(1.0f);
 	
 	plgLoader.Load_Object4DV1_PLG(obj,filename,scale,pos,rot,DD_PIXEL_FORMAT565);
-	
+	assert(obj.m_attr == 0);
 	
 }
