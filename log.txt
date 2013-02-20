@@ -1,0 +1,5 @@
+
+Opening Error Output File (log.txt) on Tue Feb 19 11:28:42.109, 2013
+
+
+Closing Error Output File.

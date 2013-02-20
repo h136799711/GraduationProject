@@ -39,8 +39,8 @@ void TestMath3D();
 int main()
 {
 #ifndef TO_FILE_HBD
-	freopen("G:\\OUTPUT.txt", "w", stdout);
-	freopen("G:\\ERROR.txt", "w", stderr);
+	freopen("D:\\OUTPUT.txt", "w", stdout);
+	freopen("D:\\ERROR.txt", "w", stderr);
 #endif
 	CTest_test();
 	printf("Test Begin\n");

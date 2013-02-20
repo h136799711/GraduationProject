@@ -411,10 +411,10 @@ public:
 };//end of class CVector
 
 template<>
-CVector<4> CVector<4>::operator +(CVector<dimension> &  right)
+CVector<4> CVector<4>::operator +(CVector<4> &  right)
 {
 		
-	CVector<dimension> result;
+	CVector<4> result;
 		
 	result.SetByIndex(HC_X,m_vector[HC_X] + right.m_vector[HC_X]);
 	result.SetByIndex(HC_Y,m_vector[HC_Y] + right.m_vector[HC_Y]);
@@ -423,10 +423,10 @@ CVector<4> CVector<4>::operator +(CVector<dimension> &  right)
 	return result;
 }
 template<>
-CVector<4> CVector<4>::operator -(CVector<dimension> &  right)
+CVector<4> CVector<4>::operator -(CVector<4> &  right)
 {
 		
-	CVector<dimension> result;
+	CVector<4> result;
 		
 	result.SetByIndex(HC_X,m_vector[HC_X] - right.m_vector[HC_X]);
 	result.SetByIndex(HC_Y,m_vector[HC_Y] - right.m_vector[HC_Y]);
@@ -492,7 +492,7 @@ float CVector<4>::operator *(CVector<4> right)
 template<>
 CVector<4> CVector<4>::operator *(float k)
 {
-	CVector<dimension> tmp;
+	CVector<4> tmp;
 
 	tmp.m_vector[HC_X] = m_vector[HC_X] * k;
 	tmp.m_vector[HC_Y] = m_vector[HC_Y] * k;
@@ -516,11 +516,6 @@ int CVector<4>::Scale(float k)
 	m_vector[HC_Y] *= k;
 	m_vector[HC_Z] *= k;
 	m_vector[HC_W] =1;
-}
-template<>
-inline float CVector<4>::Dot(CVector<4>& vec)
-{
-	return 	m_vector[HC_X] * vec.m_vector[HC_X] + m_vector[HC_Y] * vec.m_vector[HC_Y] + m_vector[HC_Z] * vec.m_vector[HC_Z];
 }
 template<>
 inline int CVector<3>::SetXYZW(float x,float y,float z,float w)

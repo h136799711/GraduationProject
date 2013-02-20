@@ -383,30 +383,6 @@ inline int CMatrix<row,col>::Det(float& det)
 	return GaussDet(det);
 }
 template<>
-inline int CMatrix<2,2>::Det(float & det)
-{	
-	det = M[0][0] * M[1][1] - M[0][1] * M[1][0];
-
-	return 1;
-}
-template<>
-inline int CMatrix<3,3>::Det(float& det)
-{
-	det = M[0][0] * (M[1][1] * M[2][2] - M[2][1] * M[1][2]) - 
-		M[0][1] * (M[1][0] * M[2][2] - M[2][0] * M[1][2]) + 
-		M[0][2] * (M[1][0] * M[2][1] - M[2][0] * M[1][1]);
-	return 1;
-}
-template<>
-inline int CMatrix<4,4>::Det(float& det)
-{
-	 
-	det = M[0][0] * (M[1][1] * M[2][2] - M[2][1] * M[1][2]) - 
-		M[0][1] * (M[1][0] * M[2][2] - M[2][0] * M[1][2]) + 
-		M[0][2] * (M[1][0] * M[2][1] - M[2][0] * M[1][1]);
-	return 1;
-}
-template<>
 inline int CMatrix<2,2>::ColumnSwap(int c,CMatrix<1,2> vec)
 {
 	M[0][c] = vec.M[0][0];

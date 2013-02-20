@@ -183,6 +183,7 @@ int CPlane<3>::Intersect_Parm_Line(CParmline3D pline,float &t,CPoint3D pt)
 	else
 		return PARM_LINE_INTERSECT_OUT_SEGMENT;
 }
+template<>
 void CPlane<3>::Init(CPoint3D p0,CVector3D& normal,int normalize)
 {
 	m_p0 = p0;
@@ -193,6 +194,7 @@ void CPlane<3>::Init(CPoint3D p0,CVector3D& normal,int normalize)
 	}
 	
 }
+template<>
 float CPlane<3>::Compute_Point_In(CPoint3D pt)
 
 {

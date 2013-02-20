@@ -11,6 +11,8 @@
 #include "RenderPipeline3DV1.h"
 #include "Draw3DV1.h"
 #include "Math3D.h"
+#include "Material.h"
+#include "Light.h"
 /*******************************************************
 
   【单个3D三角形的渲染】
@@ -228,8 +230,11 @@ int App_Main(void *params ,int num_params)
 	
 	draw3d.Draw_Text_GDI(buffer,10,30,hcdxBuilder.RGB16Bit(0,255,255),hcdxBuilder.lpddsback);
 	
+
 	
 	draw3d.Draw_Object_Wire16(sphere,hcdxBuilder.Get_Back_Buffer(),hcdxBuilder.Get_Back_lPitch());
+
+//draw3d.Draw_Object4DV1_Solid16(sphere,hcdxBuilder.Get_Back_Buffer(),hcdxBuilder.Get_Back_lPitch());
 	
 	draw3d.Draw_Text_GDI("3D立方体测试 方向键控制旋转角度",10,10,hcdxBuilder.RGB16Bit(0,255,255),hcdxBuilder.lpddsback);
 
