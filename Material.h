@@ -79,8 +79,6 @@ public:
 		}
 
 		return (1);
-
-
 	}
 	MATV1 m_materials[MAX_MATERIALS];
 	int m_num_materials;//当前的材质数
