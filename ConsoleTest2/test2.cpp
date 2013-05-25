@@ -23,8 +23,8 @@ int main()
 #endif
 	
 	TestPlgLoader();
-	TestRender3D();
-	TestRenderPipeline();
+	//TestRender3D();
+	//TestRenderPipeline();
 	return 0;
 }
 float sin_look[361];
@@ -163,6 +163,6 @@ void TestPlgLoader()
 	rot.SetX(0.0f);rot.SetY(0.0f);rot.SetZ(0.0f);rot.SetW(1.0f);
 	
 	plgLoader.Load_Object4DV1_PLG(obj,filename,scale,pos,rot,DD_PIXEL_FORMAT565);
-	assert(obj.m_attr == 0);
+	//assert(obj.m_attr == 0);
 	
 }

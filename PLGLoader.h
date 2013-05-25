@@ -99,6 +99,7 @@ public:
 		obj.m_world_pos.SetX(pos.GetX());
 		obj.m_world_pos.SetY(pos.GetY());
 		obj.m_world_pos.SetZ(pos.GetZ());
+		obj.m_world_pos.SetW(pos.GetW());
 		
 		//第二步，打开文件
 		if(!(fp = fopen(filename,"r")))
@@ -225,25 +226,23 @@ public:
 			case PLX_SHADE_MODE_FLAT_FLAG:
 				{
 					SET_BIT(obj.m_plist[poly].m_attr,POLY4DV1_ATTR_SHADE_MODE_FLAT);
-					printf("\nShade mode = pure");
+					printf("\nShade mode = FLAT");
 				}break;
 			case PLX_SHADE_MODE_GOURAUD_FLAG:
 				{
 					SET_BIT(obj.m_plist[poly].m_attr,POLY4DV1_ATTR_SHADE_MODE_GOURAUD);
-					printf("\nShade mode = pure");
+					printf("\nShade mode = GOURAUD");
 				}break;
 			case PLX_SHADE_MODE_PHONG_FLAG:
 				{
 					SET_BIT(obj.m_plist[poly].m_attr,POLY4DV1_ATTR_SHADE_MODE_PHONG);
-					printf("\nShade mode = pure");
+					printf("\nShade mode = PHONG");
 				}break;
 			default:break;
 			}
 			obj.m_plist[poly].m_state = POLY4DV1_STATE_ACTIVE;
 		}//end for poly
-		obj.m_ux.SetX(1.0f);
-		obj.m_uy.SetY(1.0f);
-		obj.m_uz.SetZ(1.0f);
+	
 
 		fclose(fp);
 		return 1;

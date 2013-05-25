@@ -76,7 +76,7 @@ coord_select:如何变换坐标
 				float z = curr_poly->m_tvlist[vertex].GetZ();
 				
 				curr_poly->m_tvlist[vertex].SetX(cam.m_view_dist * curr_poly->m_tvlist[vertex].GetX() / z );
-				curr_poly->m_tvlist[vertex].SetY(cam.m_view_dist * curr_poly->m_tvlist[vertex].GetY() / z );
+				curr_poly->m_tvlist[vertex].SetY(cam.m_view_dist * curr_poly->m_tvlist[vertex].GetY()*  cam.m_aspect_ratio / z);
 				
 			}
 		}
@@ -759,6 +759,7 @@ int CRenderPipeline3DV1::Model_To_World_Object(CObject4DV1& obj,int coord_select
 		for(vertex = 0 ; vertex < obj.m_vertices; vertex ++)
 		{
 			obj.m_vlist_trans[vertex] = obj.m_vlist_local[vertex] + obj.m_world_pos;
+			obj.m_vlist_trans[vertex].SetW(1);
 		}
 	}
 	else
@@ -766,6 +767,7 @@ int CRenderPipeline3DV1::Model_To_World_Object(CObject4DV1& obj,int coord_select
 		for(vertex = 0 ; vertex < obj.m_vertices; vertex ++)
 		{
 			obj.m_vlist_trans[vertex] = obj.m_vlist_trans[vertex] + obj.m_world_pos;
+			obj.m_vlist_trans[vertex].SetW(1);
 		}
 	}
 	return 1;
