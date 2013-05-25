@@ -1,3 +1,17 @@
+/*******************************************************
+
+  【单个3D三角形的渲染】
+  1.加载的物体: 手工创建一个多边形
+  2.相机类型: 欧拉相机，位置固定，视野为90度，视平面是归一化的
+  3.投影类型: 先进行透视变换，然后进行视口变换
+  4.3D流水线使用的计算方法: 所以方法都使用手工计算方法，不基于矩阵
+  5.背面消除:没有执行
+  6.物体剔除: 没有执行
+  7.渲染方式: 包含单个多边形的渲染列表
+  
+	
+*********************************************************/
+
 #define WIN32_LEAN_AND_MEAN	//不包括 MFC相关的
 
 #pragma comment (lib,"dxguid.lib")//GUID的定义包括
@@ -13,19 +27,8 @@
 #include "Math3D.h"
 #include "Material.h"
 #include "Light.h"
-/*******************************************************
 
-  【单个3D三角形的渲染】
-  1.加载的物体: 手工创建一个多边形
-  2.相机类型: 欧拉相机，位置固定，视野为90度，视平面是归一化的
-  3.投影类型: 先进行透视变换，然后进行视口变换
-  4.3D流水线使用的计算方法: 所以方法都使用手工计算方法，不基于矩阵
-  5.背面消除:没有执行
-  6.物体剔除: 没有执行
-  7.渲染方式: 包含单个多边形的渲染列表
-  
-	
-*********************************************************/
+
 #define WINDOW_WIDTH        800
 #define WINDOW_HEIGHT       600
 #define SCREEN_BPP16		16
@@ -52,11 +55,12 @@ CMath3D		math3d;
 float sin_look[361];
 float cos_look[361];
 bool bClosed = false;
+bool pausing = false;
 
-/*********************************************************************
+///
 //测试数据
 //
-*///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
 
 //3D必须的类
 CCamera4DV1 cam;
@@ -93,6 +97,11 @@ LRESULT CALLBACK WindowProc(HWND hwnd,UINT uMsg,WPARAM wparam,LPARAM lparam)
 int WINAPI WinMain(HINSTANCE hinstance , HINSTANCE hpreinstance,
 				   LPSTR lpcmdline,int ncmdshow)
 {
+	
+#ifndef TO_FILE_HBD
+	freopen("d:\\test2_out.txt", "w", stdout);
+	freopen("d:\\test2_err.txt", "w", stderr);
+#endif
 	
 	hcLog.Open_Error_File();
 	if(hcdxBuilder.RegisterWndClassEx(WindowProc,hinstance,APP_CLASS_NAME,CS_DBLCLKS | CS_OWNDC | 
@@ -169,7 +178,7 @@ int App_Init(void *params ,int num_params)
 	cam_dir.SetXYZW(0,0,0,1);
 
 
-	vscale.SetXYZW(1,1,1,1);
+	vscale.SetXYZW(5,25,5,1);
 	vpos.SetXYZW(0,0,0,1);
 	vrot.SetXYZW(0,0,0,1);
 	
@@ -182,9 +191,9 @@ int App_Init(void *params ,int num_params)
 		50.0,8000.0,90.0,WINDOW_WIDTH,WINDOW_HEIGHT);
 	
 	
-	plgloader.Load_Object4DV1_PLG(tank,"asset\\tank1.plg",vscale,vpos,vrot,hcdxBuilder.dd_pixel_format);
+//	plgloader.Load_Object4DV1_PLG(tank,"asset\\tank1.plg",vscale,vpos,vrot,hcdxBuilder.dd_pixel_format);
 
-//	plgloader.Load_Object4DV1_PLG(tank,"asset\\cube1.plg",vscale,vpos,vrot,hcdxBuilder.dd_pixel_format);
+	plgloader.Load_Object4DV1_PLG(tank,"asset\\cube2.plg",vscale,vpos,vrot,hcdxBuilder.dd_pixel_format);
 	
 	tank.m_world_pos.SetX(0);
 	tank.m_world_pos.SetY(0);
@@ -203,9 +212,6 @@ float view_angle = 0;
 
 int App_Main(void *params ,int num_params)
 {
-
-	//	memset(buffer,0,sizeof(buffer));
-	
 
 	
 	static CMatrix44 mrot;//旋转
@@ -240,17 +246,15 @@ int App_Main(void *params ,int num_params)
 
 	rpl3d.Transform_Object(tank,mrot,TRANSFORM_LOCAL_ONLY,1);
 	
-	
-	cam.m_pos.SetX(camera_distance*math3d.Fast_Cos(view_angle));
-	cam.m_pos.SetY(camera_distance*math3d.Fast_Sin(view_angle));
-	cam.m_pos.SetZ(2*camera_distance*math3d.Fast_Sin(view_angle));
-
-	
-//
-	// advance angle to circle around
-	if ((view_angle+=1)>=360)
-		view_angle = 0;
-
+	if(!pausing){
+		cam.m_pos.SetX(camera_distance*math3d.Fast_Cos(view_angle));
+		cam.m_pos.SetY(camera_distance*math3d.Fast_Sin(view_angle));
+		cam.m_pos.SetZ(2*camera_distance*math3d.Fast_Sin(view_angle));
+		
+		
+		if ((view_angle+=1)>=360)
+			view_angle = 0;
+	}
 
 	cam.Buid_Cam4DV1_Matrix_UVN(UVN_MODE_SIMPLE);
 
@@ -264,11 +268,10 @@ int App_Main(void *params ,int num_params)
 	 {
    
 		tank.Reset_Object();
-		// set position of object
+
 		tank.m_world_pos.SetX( x*OBJECT_SPACING+OBJECT_SPACING/2);
 		tank.m_world_pos.SetY(0);
 		tank.m_world_pos.SetZ(z*OBJECT_SPACING+OBJECT_SPACING/2);
-
 
 
 		if (!rpl3d.Cull_Object(tank, cam, CULL_OBJECT_XYZ_PLANE))
@@ -276,8 +279,8 @@ int App_Main(void *params ,int num_params)
 		
 			// 未被裁剪就可以渲染，
 			
-			rpl3d.Model_To_World_Object(tank,2);
-			// insert the object into render list
+			rpl3d.Model_To_World_Object(tank);
+			rpl3d.Remove_Backfaces_Object(tank,cam);
 			rendList.Insert_Object(tank,0);
        } // end if
 		else
@@ -292,8 +295,8 @@ int App_Main(void *params ,int num_params)
 
 	draw3d.Draw_Text_GDI(buffer, 0, WINDOW_HEIGHT-20, RGB(0,255,0), hcdxBuilder.lpddsback);
 	
-	rpl3d.Remove_Backfaces_Renderlist(rendList,cam);
 
+	rpl3d.Remove_Backfaces_Renderlist(rendList,cam);
 	rpl3d.World_To_Camera_RenderList(rendList,cam);
 	
 	
@@ -322,6 +325,16 @@ int App_Main(void *params ,int num_params)
 	if (KEY_DOWN(VK_ESCAPE) || hcInput.keyboard_state[DIK_ESCAPE])
     {
 		PostMessage(hcdxBuilder.main_hwnd, WM_DESTROY,0,0);
+
+    } 
+
+	
+
+
+	if (KEY_DOWN(VK_SPACE) || hcInput.keyboard_state[DIK_SPACE])
+    {
+
+		pausing = !pausing;
 
     } 
 

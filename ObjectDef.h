@@ -17,9 +17,9 @@
 #define POLY4DV1_ATTR_SHADE_MODE_GOURAUD 0X0080
 #define POLY4DV1_ATTR_SHADE_MODE_PHONG   0X0100
 
-#define POLY4DV1_STATE_ACTIVE			0X0001
-#define POLY4DV1_STATE_CLIPPED			0X0002
-#define POLY4DV1_STATE_BACKFACE			0X0004
+#define POLY4DV1_STATE_ACTIVE			1
+#define POLY4DV1_STATE_CLIPPED			2
+#define POLY4DV1_STATE_BACKFACE			4
 
 //基于顶点列表的多边形 实际上这里指三角形
 class CPoly4DV1
@@ -269,8 +269,8 @@ public :
 #define CAM_ROT_SEQ_ZXY		4
 #define CAM_ROT_SEQ_ZYX		5
 
-#define UVN_MODE_SPHERICAL	0
-#define UVN_MODE_SIMPLE		1
+#define UVN_MODE_SIMPLE		0
+#define UVN_MODE_SPHERICAL	1
 
 //相机模型的定义
 class CCamera4DV1
@@ -293,7 +293,7 @@ public:
 	float m_fov;//水平和垂直方向的视野
 	
 	//3d裁剪面
-	//如果视野不是90都，3D裁剪面方程将为一般性方程
+	//如果视野不是90度，3D裁剪面方程将为一般性方程
 	float m_near_clip_z;//近裁剪面
 	float m_far_clip_z;//远裁剪面
 	
@@ -326,14 +326,19 @@ public:
 		
 		m_u.Zero();
 		m_u.SetX(1);
+		m_u.SetW(1);
 		m_v.Zero();
 		m_v.SetY(1);
+		m_v.SetW(1);
 		m_n.Zero();
+		m_n.SetZ(1);
 		m_n.SetW(1);
 		if(cam_target != NULL)
 			m_target = *cam_target;
-		else
+		else{
 			m_target.Zero();
+			m_target.SetW(1.0f);
+		}
 		m_near_clip_z = near_clip_z;
 		m_far_clip_z  = far_clip_z;
 		

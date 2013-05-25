@@ -1,4 +1,18 @@
+/*******************************************************
+
+  【单个3D三角形的渲染】
+  1.加载的物体: 手工创建一个多边形
+  2.相机类型: 欧拉相机，位置固定，视野为90度，视平面是归一化的
+  3.投影类型: 先进行透视变换，然后进行视口变换
+  4.3D流水线使用的计算方法: 所以方法都使用手工计算方法，不基于矩阵
+  5.背面消除:没有执行
+  6.物体剔除: 没有执行
+  7.渲染方式: 包含单个多边形的渲染列表
+  
+	
+*********************************************************/
 /*
+
 #define WIN32_LEAN_AND_MEAN	//不包括 MFC相关的
 
 #pragma comment (lib,"dxguid.lib")//GUID的定义包括
@@ -14,20 +28,8 @@
 #include "Math3D.h"
 #include "Material.h"
 #include "Light.h"
-/*******************************************************
 
-  【单个3D三角形的渲染】
-  1.加载的物体: 手工创建一个多边形
-  2.相机类型: 欧拉相机，位置固定，视野为90度，视平面是归一化的
-  3.投影类型: 先进行透视变换，然后进行视口变换
-  4.3D流水线使用的计算方法: 所以方法都使用手工计算方法，不基于矩阵
-  5.背面消除:没有执行
-  6.物体剔除: 没有执行
-  7.渲染方式: 包含单个多边形的渲染列表
-  
-	
-*********************************************************/
-/*
+
 #define WINDOW_WIDTH        400
 #define WINDOW_HEIGHT       400
 #define SCREEN_BPP16		16
@@ -50,7 +52,7 @@ float sin_look[361];
 float cos_look[361];
 bool bClosed = false;
 
-/*********************************************************************
+//
 //测试数据
 //
 ///////////////////////////////////////////////////////////////////
@@ -219,9 +221,11 @@ int App_Main(void *params ,int num_params)
 	
 	rpl3d.Model_To_World_Object(sphere);
 
-//	rpl3d.Remove_Backfaces_Object(sphere,cam);
 
 	cam.Build_Cam4DV1_Matrix_Euler(CAM_ROT_SEQ_ZYX);
+
+	rpl3d.Remove_Backfaces_Object(sphere,cam);
+
 	rpl3d.World_To_Camera_Object(sphere,cam);
 	
 	rpl3d.Camera_To_Perspective_Object(sphere,cam);

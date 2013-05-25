@@ -16,12 +16,12 @@ public:
 	{
 		for(int poly=0;poly<rend_list.m_polys;poly++)
 		{
+					
+			
 			if(!(rend_list.m_poly_ptrs[poly]->m_state & POLY4DV1_STATE_ACTIVE)
 				|| (rend_list.m_poly_ptrs[poly]->m_state & POLY4DV1_STATE_CLIPPED)
 				|| (rend_list.m_poly_ptrs[poly]->m_state & POLY4DV1_STATE_BACKFACE))
-			{
 				continue;
-			}			
 			
 			
 			Draw_Clip_Line16(rend_list.m_poly_ptrs[poly]->m_tvlist[0].GetX(),
