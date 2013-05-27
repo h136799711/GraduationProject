@@ -76,7 +76,7 @@ coord_select:如何变换坐标
 				float z = curr_poly->m_tvlist[vertex].GetZ();
 				
 				curr_poly->m_tvlist[vertex].SetX(cam.m_view_dist * curr_poly->m_tvlist[vertex].GetX() / z );
-				curr_poly->m_tvlist[vertex].SetY(cam.m_view_dist * curr_poly->m_tvlist[vertex].GetY() / z );
+				curr_poly->m_tvlist[vertex].SetY(cam.m_view_dist * curr_poly->m_tvlist[vertex].GetY()*  cam.m_aspect_ratio / z);
 				
 			}
 		}
@@ -235,11 +235,18 @@ coord_select:如何变换坐标
 		for(int poly=0;poly<rend_list.m_polys;poly++)
 		{
 			CPolyF4DV1* curr_poly = rend_list.m_poly_ptrs[poly];
-			if((curr_poly == NULL) || !(curr_poly->m_state & POLY4DV1_STATE_ACTIVE)
-				|| (curr_poly->m_state & POLY4DV1_STATE_CLIPPED)
-				|| (curr_poly->m_attr & POLY4DV1_ATTR_2SIDED)
-				|| (curr_poly->m_state & POLY4DV1_STATE_BACKFACE))
+
+				
+			if ((curr_poly==NULL) || !(curr_poly->m_state & POLY4DV1_STATE_ACTIVE) ||
+				(curr_poly->m_state & POLY4DV1_STATE_CLIPPED ) || 
+				(curr_poly->m_attr  & POLY4DV1_ATTR_2SIDED)    ||
+				(curr_poly->m_state & POLY4DV1_STATE_BACKFACE) )
+			{
+			printf("continue %d\n",curr_poly->m_attr );
 				continue;
+			}
+			
+
 			CVector4D u,v,n;
 			
 			u = curr_poly->m_tvlist[1] - curr_poly->m_tvlist[0];
@@ -248,15 +255,18 @@ coord_select:如何变换坐标
 			v.SetW(1.0f);
 			
 			u.Cross(v,n);
-			
+			u.SetW(1.0f);
 			CVector4D view;
 			view = cam.m_pos - curr_poly->m_tvlist[0];
 			view.SetW(1.0f);
-			float dp = u.Dot(view);
+			float dp = n.Dot(view);
+			dp= dp - view.GetW()*n.GetW();
+			printf("%f \n",dp);
 			if(dp <= 0.0)
 			{
 				SET_BIT(curr_poly->m_state,POLY4DV1_STATE_BACKFACE);
 			}
+				
 		}
 	}
 	/*
@@ -759,6 +769,7 @@ int CRenderPipeline3DV1::Model_To_World_Object(CObject4DV1& obj,int coord_select
 		for(vertex = 0 ; vertex < obj.m_vertices; vertex ++)
 		{
 			obj.m_vlist_trans[vertex] = obj.m_vlist_local[vertex] + obj.m_world_pos;
+			obj.m_vlist_trans[vertex].SetW(1);
 		}
 	}
 	else
@@ -766,6 +777,7 @@ int CRenderPipeline3DV1::Model_To_World_Object(CObject4DV1& obj,int coord_select
 		for(vertex = 0 ; vertex < obj.m_vertices; vertex ++)
 		{
 			obj.m_vlist_trans[vertex] = obj.m_vlist_trans[vertex] + obj.m_world_pos;
+			obj.m_vlist_trans[vertex].SetW(1);
 		}
 	}
 	return 1;

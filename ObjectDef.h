@@ -17,9 +17,9 @@
 #define POLY4DV1_ATTR_SHADE_MODE_GOURAUD 0X0080
 #define POLY4DV1_ATTR_SHADE_MODE_PHONG   0X0100
 
-#define POLY4DV1_STATE_ACTIVE			0X0001
-#define POLY4DV1_STATE_CLIPPED			0X0002
-#define POLY4DV1_STATE_BACKFACE			0X0004
+#define POLY4DV1_STATE_ACTIVE			1
+#define POLY4DV1_STATE_CLIPPED			2
+#define POLY4DV1_STATE_BACKFACE			4
 
 //基于顶点列表的多边形 实际上这里指三角形
 class CPoly4DV1
@@ -49,8 +49,8 @@ public:
 };
 typedef CPolyF4DV1* CPolyF4DV1_PTR;
 
-#define OBJECT4DV1_MAX_VERTICES           64  // 64
-#define OBJECT4DV1_MAX_POLYS              128 // 128
+#define OBJECT4DV1_MAX_VERTICES           1024  // 64
+#define OBJECT4DV1_MAX_POLYS              1024 // 128
 
 #define OBJECT4DV1_STATE_ACTIVE           0x0001
 #define OBJECT4DV1_STATE_VISIBLE          0x0002 
@@ -123,11 +123,11 @@ public:
 };
 
 //本地有时不行，跟数值有关系
-#define RENDERLIST4DV1_MAX_POLYS	8192  //32768
+#define RENDERLIST4DV1_MAX_POLYS	16384  //32768
 
-#define TRANSFORM_LOCAL_ONLY		0X0001
-#define TRANSFORM_TRANS_ONLY		0X0002
-#define TRANSFORM_LOCAL_TO_TRANS	0X0004
+#define TRANSFORM_LOCAL_ONLY		0
+#define TRANSFORM_TRANS_ONLY		1
+#define TRANSFORM_LOCAL_TO_TRANS	2
 
 //渲染列表定义
 class CRenderList4DV1
@@ -258,19 +258,19 @@ public :
 };
 
 //相机类型
-#define CAM_MODEL_EULER		0X0001
-#define CAM_MODEL_UVN		0X0002
+#define CAM_MODEL_EULER		0X0008
+#define CAM_MODEL_UVN		0X0010
 
 //相机选择顺序
-#define CAM_ROT_SEQ_XYZ		0X0010
-#define CAM_ROT_SEQ_XZY		0X0012
-#define CAM_ROT_SEQ_YXZ		0X0014
-#define CAM_ROT_SEQ_YZX		0X0016
-#define CAM_ROT_SEQ_ZXY		0X0017
-#define CAM_ROT_SEQ_ZYX		0X0020
+#define CAM_ROT_SEQ_XYZ		0
+#define CAM_ROT_SEQ_XZY		1
+#define CAM_ROT_SEQ_YXZ		2
+#define CAM_ROT_SEQ_YZX		3
+#define CAM_ROT_SEQ_ZXY		4
+#define CAM_ROT_SEQ_ZYX		5
 
-#define UVN_MODE_SPHERICAL	0X0001
-#define UVN_MODE_SIMPLE		0X0002
+#define UVN_MODE_SIMPLE		0
+#define UVN_MODE_SPHERICAL	1
 
 //相机模型的定义
 class CCamera4DV1
@@ -293,7 +293,7 @@ public:
 	float m_fov;//水平和垂直方向的视野
 	
 	//3d裁剪面
-	//如果视野不是90都，3D裁剪面方程将为一般性方程
+	//如果视野不是90度，3D裁剪面方程将为一般性方程
 	float m_near_clip_z;//近裁剪面
 	float m_far_clip_z;//远裁剪面
 	
@@ -325,12 +325,20 @@ public:
 		
 		
 		m_u.Zero();
+		m_u.SetX(1);
+		m_u.SetW(1);
 		m_v.Zero();
+		m_v.SetY(1);
+		m_v.SetW(1);
 		m_n.Zero();
+		m_n.SetZ(1);
+		m_n.SetW(1);
 		if(cam_target != NULL)
 			m_target = *cam_target;
-		else
+		else{
 			m_target.Zero();
+			m_target.SetW(1.0f);
+		}
 		m_near_clip_z = near_clip_z;
 		m_far_clip_z  = far_clip_z;
 		
@@ -404,9 +412,9 @@ public:
 		//step1:为位置创建逆平移矩阵
 		
 		mt_inv.Identify();
-		mt_inv.M[2][0] = -m_pos.GetX();
-		mt_inv.M[2][1] = -m_pos.GetY();
-		mt_inv.M[2][2] = -m_pos.GetZ();
+		mt_inv.M[3][0] = -m_pos.GetX();
+		mt_inv.M[3][1] = -m_pos.GetY();
+		mt_inv.M[3][2] = -m_pos.GetZ();
 		
 		if(mode == UVN_MODE_SPHERICAL)
 		{
@@ -425,11 +433,12 @@ public:
 			
 		}
 		
-		m_n = m_pos - m_target;
+		m_n = m_target-m_pos ;
+		m_n.SetW(1);
 		
 		m_v.SetXYZW(0,1,0);
 		
-		m_v.Cross(m_n,m_v);
+		m_v.Cross(m_n,m_u);
 		
 		m_n.Cross(m_u,m_v);
 		

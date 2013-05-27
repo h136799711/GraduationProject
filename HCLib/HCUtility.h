@@ -23,7 +23,7 @@ USHORT RGB16Bit565(int r, int g, int b);
 USHORT RGB16Bit555(int r, int g, int b);
 // function ptr to RGB16 builder
 
-static unsigned long start_clock_count;
+static unsigned long start_clock_count=0;
 DWORD Get_Clock(void);
 DWORD Start_Clock(void);
 DWORD Wait_Clock(DWORD count);

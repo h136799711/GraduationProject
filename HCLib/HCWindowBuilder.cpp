@@ -85,6 +85,6 @@ BOOLEAN HCWindowBuilder::CreateWndClassEx(LPCTSTR lpWindowName,int windowed,int 
 		//不正常，渲染区域可能大了或小了
 		ShowWindow(this->main_hwnd, SW_SHOW);
 	} // end if windowed
-	hclog.Close_Error_File();
+
 	return TRUE;
 }

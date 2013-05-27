@@ -11,7 +11,6 @@
   
 	
 *********************************************************/
-/*
 
 #define WIN32_LEAN_AND_MEAN	//不包括 MFC相关的
 
@@ -30,18 +29,23 @@
 #include "Light.h"
 
 
-#define WINDOW_WIDTH        400
-#define WINDOW_HEIGHT       400
+#define WINDOW_WIDTH        800
+#define WINDOW_HEIGHT       600
 #define SCREEN_BPP16		16
+
+// object defines
+#define NUM_OBJECTS     16
+#define OBJECT_SPACING  250
+
 #define APP_CLASS_NAME	"hebiduClass"
 
-#define WINDOW_TITLE	"3D线框引擎测试" //窗口的标题
+#define WINDOW_TITLE	"3D线框引擎测试2" //窗口的标题
 
 //functions declaration
 int App_Init(void *params = NULL,int num_params=0);
 int App_Main(void *params = NULL,int num_params=0);
 int App_Shutdown(void *params = NULL,int num_params=0);
-int Input_Process();
+
 
 //variable 
 HCDXBuilder hcdxBuilder;
@@ -51,8 +55,9 @@ CMath3D		math3d;
 float sin_look[361];
 float cos_look[361];
 bool bClosed = false;
+bool pausing = false;
 
-//
+///
 //测试数据
 //
 ///////////////////////////////////////////////////////////////////
@@ -64,27 +69,16 @@ CDraw3DV1		draw3d;
 CRenderPipeline3DV1		rpl3d;
 //初始化量
 CPoint4D cam_pos;
+CPoint4D cam_target;
 CVector4D cam_dir;
 CVector4D vscale,vpos,vrot;//
 
 
-CPoint4D poly_pos;
 
 //用于立方体
 CPlgLoader plgloader;
-CObject4DV1 sphere;
-float ang_x = 0,ang_y = 0,ang_z = 0;
-int vx=0,vy=0;
+CObject4DV1 tank;
 
-void DrawRect(int x0,int y0,int x1,int y1,int color,UCHAR* video_buffer,int lpitch)
-{
-	
-	draw3d.Draw_Line16(x0,y0,x1,y0,color,video_buffer,lpitch);
-	draw3d.Draw_Line16(x1,y0,x1,y1,color,video_buffer,lpitch);
-	draw3d.Draw_Line16(x1,y1,x0,y1,color,video_buffer,lpitch);
-	draw3d.Draw_Line16(x0,y1,x0,y0,color,video_buffer,lpitch);
-
-}
 ///////////////////////////////////////////////////////////////////////////
 LRESULT CALLBACK WindowProc(HWND hwnd,UINT uMsg,WPARAM wparam,LPARAM lparam)
 {
@@ -103,13 +97,20 @@ LRESULT CALLBACK WindowProc(HWND hwnd,UINT uMsg,WPARAM wparam,LPARAM lparam)
 int WINAPI WinMain(HINSTANCE hinstance , HINSTANCE hpreinstance,
 				   LPSTR lpcmdline,int ncmdshow)
 {
+	
+#ifndef TO_FILE_HBD
+	freopen("d:\\test2_out.txt", "w", stdout);
+	freopen("d:\\test2_err.txt", "w", stderr);
+#endif
+	
 	hcLog.Open_Error_File();
-	if(hcdxBuilder.RegisterWndClassEx(WindowProc,hinstance,APP_CLASS_NAME) == FALSE)
+	if(hcdxBuilder.RegisterWndClassEx(WindowProc,hinstance,APP_CLASS_NAME,CS_DBLCLKS | CS_OWNDC | 
+                          CS_HREDRAW | CS_VREDRAW) == FALSE)
 	{
 		hcLog.Write_Error("\n WinMain::hcdxBuilder.RegisterWndClassEx Failed");
 		return 0;
 	}
-	if(hcdxBuilder.CreateWndClassEx(WINDOW_TITLE,SCREEN_WINDOWED,0,0,WINDOW_WIDTH,WINDOW_HEIGHT) == FALSE)
+	if(hcdxBuilder.CreateWndClassEx(WINDOW_TITLE,SCREEN_FULLSCREEN,0,0,WINDOW_WIDTH,WINDOW_HEIGHT) == FALSE)
 	{
 		hcLog.Write_Error("\n WinMain::hcdxBuilder.CreateWndClassEx Failed");
 		return 0;
@@ -138,15 +139,19 @@ int WINAPI WinMain(HINSTANCE hinstance , HINSTANCE hpreinstance,
 		App_Main();
 		
 	}
+
 	App_Shutdown();
 	hcLog.Close_Error_File();
 	return msg.wParam;
 }
-char buffer[120];
+char buffer[2048];
 int App_Init(void *params ,int num_params)
 {
+	
+	// seed random number generator
+	srand(Start_Clock());
 	math3d.Build_Sin_Cos_Tables(cos_look,sin_look);
-	if(FAILED(hcdxBuilder.DDraw_Init(WINDOW_WIDTH,WINDOW_HEIGHT,SCREEN_BPP16,SCREEN_WINDOWED)))
+	if(FAILED(hcdxBuilder.DDraw_Init(WINDOW_WIDTH,WINDOW_HEIGHT,SCREEN_BPP16,SCREEN_FULLSCREEN)))
 	{
 		hcLog.Write_Error("\n App_Init FAILED!");
 		return 0;
@@ -165,12 +170,15 @@ int App_Init(void *params ,int num_params)
 	RECT screen_rect =
 	{0,0,hcdxBuilder.screen_width - 1,hcdxBuilder.screen_height-1};
 	hcdxBuilder.lpddclipper = hcdxBuilder.DDraw_Attach_Clipper(hcdxBuilder.lpddsback,1,&screen_rect);
-	draw3d.SetClipRect(60,60,350,350);
-	
+	draw3d.SetClipRect(0,0,hcdxBuilder.screen_width- 1 ,hcdxBuilder.screen_height-1);
+
 	
 	cam_pos.SetXYZW(0,0,0,1);
+	cam_target.SetXYZW(0,0,0,1);
 	cam_dir.SetXYZW(0,0,0,1);
-	vscale.SetXYZW(5,5,5,1);
+
+
+	vscale.SetXYZW(5,25,5,1);
 	vpos.SetXYZW(0,0,0,1);
 	vrot.SetXYZW(0,0,0,1);
 	
@@ -178,85 +186,18 @@ int App_Init(void *params ,int num_params)
 
 	
 	
-	CPoint4D origin;
-	origin.SetXYZW(0,0,0,1);
-	cam.Init(CAM_MODEL_EULER,
-		cam_pos,cam_dir,
-		NULL,50.0,500.0,90.0,WINDOW_WIDTH,WINDOW_HEIGHT);
+	cam.Init(CAM_MODEL_UVN,
+		cam_pos,cam_dir,NULL,
+		50.0,8000.0,90.0,WINDOW_WIDTH,WINDOW_HEIGHT);
 	
 	
-	plgloader.Load_Object4DV1_PLG(sphere,"asset\\cube2.plg",vscale,vpos,vrot,hcdxBuilder.dd_pixel_format);
-	sphere.m_world_pos.SetZ(100);
-	return 1;
-}
-int App_Main(void *params ,int num_params)
-{
+//	plgloader.Load_Object4DV1_PLG(tank,"asset\\tank1.plg",vscale,vpos,vrot,hcdxBuilder.dd_pixel_format);
 
-	//	memset(buffer,0,sizeof(buffer));
+	plgloader.Load_Object4DV1_PLG(tank,"asset\\cube2.plg",vscale,vpos,vrot,hcdxBuilder.dd_pixel_format);
 	
-	if(bClosed)
-	{
-		return 1;
-	}
-	
-	static CMatrix44 mrot;//旋转
-
-
-	Start_Clock();
-	
-	hcdxBuilder.DDraw_Fill_Surface(hcdxBuilder.lpddsback,0);
-	if(hcInput.DInput_Read_Keyboard() != 1)
-	{
-		hcLog.Write_Error("\n App_Main::hcInput.DInput_Read_Keyboard FAILED!");
-		return 0;
-	}
-	vx = vy = 0;
-	Input_Process();
-		
-	sphere.Reset_Object();
-	rpl3d.Build_XYZ_Rotation_Matrix44(ang_x,ang_y,ang_z,mrot);
-	mrot.M[3][0] = vx;
-	mrot.M[3][1] = vy;
-	rpl3d.Transform_Object(sphere,mrot,TRANSFORM_LOCAL_ONLY,1);
-	
-	rpl3d.Model_To_World_Object(sphere);
-
-
-	cam.Build_Cam4DV1_Matrix_Euler(CAM_ROT_SEQ_ZYX);
-
-	rpl3d.Remove_Backfaces_Object(sphere,cam);
-
-	rpl3d.World_To_Camera_Object(sphere,cam);
-	
-	rpl3d.Camera_To_Perspective_Object(sphere,cam);
-	rpl3d.Perspective_To_Screen_Object(sphere,cam);
-
-
-	//绘制
-	hcdxBuilder.DDraw_Lock_Back_Surface();
-	
-	draw3d.Draw_Text_GDI(buffer,10,30,hcdxBuilder.RGB16Bit(0,255,255),hcdxBuilder.lpddsback);
-	
-
-	
-	draw3d.Draw_Object_Wire16(sphere,hcdxBuilder.Get_Back_Buffer(),hcdxBuilder.Get_Back_lPitch());
-
-//draw3d.Draw_Object4DV1_Solid16(sphere,hcdxBuilder.Get_Back_Buffer(),hcdxBuilder.Get_Back_lPitch());
-	
-	draw3d.Draw_Text_GDI("3D立方体测试 方向键控制旋转角度",10,10,hcdxBuilder.RGB16Bit(0,255,255),hcdxBuilder.lpddsback);
-
-	DrawRect(60,60,350,350,hcdxBuilder.RGB16Bit(0,255,255),hcdxBuilder.Get_Back_Buffer(),hcdxBuilder.Get_Back_lPitch());
-	
-	
-	hcdxBuilder.DDraw_Unlock_Back_Surface();
-	
-	hcdxBuilder.DDraw_Flip();
-	
-	Wait_Clock(30);
-	
-	
-	
-	
+	tank.m_world_pos.SetX(0);
+	tank.m_world_pos.SetY(0);
+	tank.m_world_pos.SetZ(0);
 	return 1;
 }
 int App_Shutdown(void *params,int num_params)
@@ -267,48 +208,137 @@ int App_Shutdown(void *params,int num_params)
 	return 1;
 }
 
-int Input_Process()
+float view_angle = 0; 
+
+int App_Main(void *params ,int num_params)
 {
-	static CMatrix44 mt;
-	mt.Identify();
-	if(KEY_DOWN(VK_ESCAPE) || hcInput.keyboard_state[DIK_ESCAPE])
+
+	
+	static CMatrix44 mrot;//旋转
+
+	static float ang_x = 0,ang_y = 5,ang_z = 0;
+
+	// 用于旋转相机
+	static float camera_distance = 1750;
+
+	char work_string[256]; // temp string
+	Start_Clock();
+	
+
+	hcdxBuilder.DDraw_Fill_Surface(hcdxBuilder.lpddsback,0);
+
+	if(hcInput.DInput_Read_Keyboard() != 1)
 	{
-		PostMessage(hcdxBuilder.main_hwnd,WM_DESTROY,0,0);
-		hcLog.Write_Error("\n App_Main::PostMessage WM_DESTROY!");
-		bClosed = true;
+		hcLog.Write_Error("\n App_Main::hcInput.DInput_Read_Keyboard FAILED!");
+		return 0;
 	}
-	if(KEY_DOWN(VK_RIGHT) || hcInput.keyboard_state[DIK_RIGHT])
-	{
-		ang_y = 1;
+
+	
+	rendList.Reset_RenderListV1();
+	ang_x = 0;
+	ang_y = 1;
+	ang_z = 0;
+
+		
+	//tank.Reset_Object();
+
+	rpl3d.Build_XYZ_Rotation_Matrix44(ang_x,ang_y,ang_z,mrot);
+
+	rpl3d.Transform_Object(tank,mrot,TRANSFORM_LOCAL_ONLY,1);
+	
+	if(!pausing){
+		cam.m_pos.SetX(camera_distance*math3d.Fast_Cos(view_angle));
+		cam.m_pos.SetY(camera_distance*math3d.Fast_Sin(view_angle));
+		cam.m_pos.SetZ(2*camera_distance*math3d.Fast_Sin(view_angle));
+		
+		
+		if ((view_angle+=1)>=360)
+			view_angle = 0;
 	}
-	if(KEY_DOWN(VK_LEFT) || hcInput.keyboard_state[DIK_LEFT])
-	{
-		ang_y = -1;		
-	}
-	if(KEY_DOWN(VK_UP) || hcInput.keyboard_state[DIK_UP])
-	{
-		ang_x = 1;		
-	}
-	if(KEY_DOWN(VK_DOWN) || hcInput.keyboard_state[DIK_DOWN])
-	{
-		ang_x = -1;		
-	}
-	if(KEY_DOWN('W') || hcInput.keyboard_state[DIK_W])
-	{
-		vy = 1;		
-	}
-	if(KEY_DOWN('S') || hcInput.keyboard_state[DIK_S])
-	{
-		vy = -1;		
-	}
-	if(KEY_DOWN('A') || hcInput.keyboard_state[DIK_A])
-	{
-		vx = -1;	
-	}
-	if(KEY_DOWN('D') || hcInput.keyboard_state[DIK_D])
-	{
-		vx = 1;		
-	}
+
+	cam.Buid_Cam4DV1_Matrix_UVN(UVN_MODE_SIMPLE);
+
+	strcpy(buffer,"Objects Culled: ");
+
+
+
+	for (int x=-NUM_OBJECTS/2; x < NUM_OBJECTS/2; x++)
+	
+	 for (int z=-NUM_OBJECTS/2; z < NUM_OBJECTS/2; z++)
+	 {
+   
+		tank.Reset_Object();
+
+		tank.m_world_pos.SetX( x*OBJECT_SPACING+OBJECT_SPACING/2);
+		tank.m_world_pos.SetY(0);
+		tank.m_world_pos.SetZ(z*OBJECT_SPACING+OBJECT_SPACING/2);
+
+
+		if (!rpl3d.Cull_Object(tank, cam, CULL_OBJECT_XYZ_PLANE))
+       {
+		
+			// 未被裁剪就可以渲染，
+			
+			rpl3d.Model_To_World_Object(tank);
+			rpl3d.Remove_Backfaces_Object(tank,cam);
+			rendList.Insert_Object(tank,0);
+       } // end if
+		else
+       {
+			
+       sprintf(work_string, "[%d, %d] ", x,z);
+       strcat(buffer, work_string);
+       }
+	 
+    } // end for
+
+
+	draw3d.Draw_Text_GDI(buffer, 0, WINDOW_HEIGHT-20, RGB(0,255,0), hcdxBuilder.lpddsback);
+	
+
+	rpl3d.Remove_Backfaces_Renderlist(rendList,cam);
+	rpl3d.World_To_Camera_RenderList(rendList,cam);
+	
+	
+	rpl3d.Camera_To_Perspective_Renderlist(rendList,cam);
+
+	rpl3d.Perspective_To_Screen_Rendlist(rendList,cam);
+
+	draw3d.Draw_Text_GDI("Press ESC to exit.", 0, 0, RGB(0,255,0), hcdxBuilder.lpddsback);
+
+	
+
+	//绘制
+	hcdxBuilder.DDraw_Lock_Back_Surface();
+	
+	draw3d.Draw_RenderList4DV1_Wire16(rendList,hcdxBuilder.Get_Back_Buffer(),hcdxBuilder.Get_Back_lPitch());
+	
+	hcdxBuilder.DDraw_Unlock_Back_Surface();
+	
+	hcdxBuilder.DDraw_Flip();
+	
+	Wait_Clock(30);
+	
+	
+
+
+	if (KEY_DOWN(VK_ESCAPE) || hcInput.keyboard_state[DIK_ESCAPE])
+    {
+		PostMessage(hcdxBuilder.main_hwnd, WM_DESTROY,0,0);
+
+    } 
+
+	
+
+
+	if (KEY_DOWN(VK_SPACE) || hcInput.keyboard_state[DIK_SPACE])
+    {
+
+		pausing = !pausing;
+
+    } 
+
+	
+	
 	return 1;
 }
-*/
